@@ -9,42 +9,49 @@
 </head>
 
 <body>
-    <h1 id="header">Guess The Number</h1>
-    <div id="bodyDiv">
-        <div id="gameBoard">
-            <!-- Main game here -->
-            <input type="number" placeholder="Enter Number here" id="input">
-            <p id="gb01">
-                
-            </p>
-            <div id="gb02">
-                <button id="submitBtn">
-                    Submit
-                </button>
-                <button id="resetBtn" class="hidden">
-                    Reset
-                </button>
+    <div>
+        <h1 id="header">Guess The Number</h1>
+        <div id="bodyDiv">
+            <div id="gameBoard">
+                <!-- Main game here -->
+                <input type="number" placeholder="Enter Number here" id="input">
+                <p id="gb01">
+
+                </p>
+                <div id="gb02">
+                    <button id="submitBtn">
+                        Submit
+                    </button>
+                    <button id="resetBtn" class="hidden">
+                        Reset
+                    </button>
+                </div>
             </div>
-        </div>
-        <div id="textBoard">
-            <div id="text01" class="">
-                <div>
-                    <h3>Rules:</h3>
-                    <ul>
-                        <li>The system will generate a random 5-digit number.</li>
-                        <li>You must guess the number by entering exactly 5 digits.</li>
-                        <li>Each guess must be a 5-digit number (no more, no less).</li>
-                        <li>After each guess, you will be told how many digits are in the correct position.</li>
-                        <li>The game continues until all 5 digits are in the correct position.</li>
-                        <li>Your total number of guesses will be counted.</li>
-                        <li>Once you guess correctly, you can reset the game to play again.</li>
-                    </ul>
+            <div id="textBoard">
+                <div id="text01" class="">
+                    <div>
+                        <h3>Rules:</h3>
+                        <ul>
+                            <li>The system will generate a random 5-digit number.</li>
+                            <li>You must guess the number by entering exactly 5 digits.</li>
+                            <li>Each guess must be a 5-digit number (no more, no less).</li>
+                            <li>After each guess, you will be told how many digits are in the correct position.</li>
+                            <li>The game continues until all 5 digits are in the correct position.</li>
+                            <li>Your total number of guesses will be counted.</li>
+                            <li>Once you guess correctly, you can reset the game to play again.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+        <div id="alert" class="hidden">
+        </div>
     </div>
-    <div id="alert" class="hidden">
-
+    <div>
+        <footer>
+            <p><a href="https://github.com/Mahfuz2411/guess_the_number_game">Click here</a> to get the code</p>
+            <p>Developed by <a href="https://github.com/Mahfuz2411">Mahfuz</a></p>
+        </footer>
     </div>
     <script src="script.js"></script>
 </body>

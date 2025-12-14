@@ -9,6 +9,7 @@ body {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     min-height: 100vh;
     color: #fff;
+    overflow-x: hidden;
 }
 
 .hidden {
@@ -16,9 +17,8 @@ body {
 }
 
 #header {
-    display: flex;
-    justify-content: center;
-    margin: 30px 0;
+    text-align: center;
+    margin: 30px 10px;
     font-size: 2.5rem;
     letter-spacing: 2px;
 }
@@ -27,8 +27,8 @@ body {
     display: flex;
     justify-content: space-around;
     align-items: flex-start;
-    padding: 20px;
     gap: 30px;
+    padding: 20px;
 }
 
 #gameBoard {
@@ -36,14 +36,14 @@ body {
     backdrop-filter: blur(8px);
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     width: 360px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 #input {
-    height: 40px;
     width: 100%;
-    padding: 0 10px;
+    height: 40px;
+    padding: 0 12px;
     font-size: 16px;
     border-radius: 6px;
     border: none;
@@ -77,7 +77,7 @@ body {
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 #submitBtn {
@@ -114,7 +114,6 @@ body {
 }
 
 #text01 ul {
-    list-style: disc;
     margin-left: 20px;
 }
 
@@ -131,33 +130,70 @@ body {
     border-radius: 6px;
     color: white;
     font-size: 16px;
-    z-index: 1000000000000000;
+    z-index: 1000000;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+#alert.hidden {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+    pointer-events: none;
 }
 
 .success {
     background-color: #28a745;
+    animation: alertIn 0.4s ease-out;
 }
 
 .warning {
     background-color: rgb(156, 156, 0);
+    animation: alertIn 0.4s ease-out;
 }
 
 .error {
     background-color: #dc3545;
+    animation: alertIn 0.4s ease-out;
+}
+
+@keyframes alertIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+footer {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+footer a {
+    color: #00c6ff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
 }
 
 @media (max-width: 768px) {
     #header {
         font-size: 2rem;
-        text-align: center;
-        margin: 20px 10px;
     }
 
     #bodyDiv {
         flex-direction: column;
         align-items: center;
-        gap: 20px;
         padding: 10px;
     }
 
@@ -165,34 +201,12 @@ body {
     #textBoard {
         width: 100%;
         max-width: 360px;
-        padding: 20px;
-    }
-
-    #input,
-    #gb01,
-    #submitBtn,
-    #resetBtn {
-        width: 100%;
-    }
-
-    #text01 ul {
-        padding-left: 18px;
     }
 }
 
 @media (max-width: 480px) {
     #header {
         font-size: 1.7rem;
-    }
-
-    #gameBoard,
-    #textBoard {
-        max-width: 100%;
-        border-radius: 10px;
-    }
-
-    #input {
-        font-size: 15px;
     }
 
     #submitBtn,
