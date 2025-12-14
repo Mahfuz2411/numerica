@@ -1,4 +1,3 @@
-/* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -12,12 +11,10 @@ body {
     color: #fff;
 }
 
-/* Utility */
 .hidden {
     display: none;
 }
 
-/* Header */
 #header {
     display: flex;
     justify-content: center;
@@ -26,7 +23,6 @@ body {
     letter-spacing: 2px;
 }
 
-/* Main Layout */
 #bodyDiv {
     display: flex;
     justify-content: space-around;
@@ -35,7 +31,6 @@ body {
     gap: 30px;
 }
 
-/* Game Board */
 #gameBoard {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
@@ -45,7 +40,6 @@ body {
     width: 360px;
 }
 
-/* Input */
 #input {
     height: 40px;
     width: 100%;
@@ -57,7 +51,6 @@ body {
     margin-bottom: 15px;
 }
 
-/* Result box */
 #gb01 {
     height: 40px;
     width: 100%;
@@ -70,14 +63,12 @@ body {
     font-weight: bold;
 }
 
-/* Buttons wrapper */
 #gb02 {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* Buttons */
 #submitBtn,
 #resetBtn {
     width: 100%;
@@ -109,7 +100,6 @@ body {
     transform: scale(1.03);
 }
 
-/* Text Board */
 #textBoard {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
@@ -133,7 +123,6 @@ body {
     opacity: 0.9;
 }
 
-/* Alert */
 #alert {
     position: fixed;
     top: 20px;
@@ -146,7 +135,6 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
 
-/* Alert Types */
 .success {
     background-color: #28a745;
 }
@@ -159,10 +147,64 @@ body {
     background-color: #dc3545;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
+    #header {
+        font-size: 2rem;
+        text-align: center;
+        margin: 20px 10px;
+    }
+
     #bodyDiv {
         flex-direction: column;
         align-items: center;
+        gap: 20px;
+        padding: 10px;
+    }
+
+    #gameBoard,
+    #textBoard {
+        width: 100%;
+        max-width: 360px;
+        padding: 20px;
+    }
+
+    #input,
+    #gb01,
+    #submitBtn,
+    #resetBtn {
+        width: 100%;
+    }
+
+    #text01 ul {
+        padding-left: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    #header {
+        font-size: 1.7rem;
+    }
+
+    #gameBoard,
+    #textBoard {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    #input {
+        font-size: 15px;
+    }
+
+    #submitBtn,
+    #resetBtn {
+        font-size: 15px;
+        padding: 10px;
+    }
+
+    #alert {
+        top: 10px;
+        right: 10px;
+        font-size: 14px;
+        padding: 10px 14px;
     }
 }

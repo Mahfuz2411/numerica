@@ -17,21 +17,22 @@ let alert = document.getElementById("alert");
 // -------------
 // let randomNumber = Math.floor(Math.random()*90000 + 10000);
 
+const showAlert = (mssg, type) => {
+    alert.textContent = mssg;
+    alert.className = type;
+    
+    setTimeout(() => {
+        alert.className = "hidden"; 
+    }, 3000);
+}
+
 const randomNumberMaker = () => {
     let result = "";
     for (let i=0; i<5; i++) {
         result += Math.floor(Math.random()*10);
     }
+    // showAlert(``, "info")
     return result;
-}
-
-const showAlert = (mssg, type) => {
-    alert.textContent = mssg;
-    alert.className = type;
-
-    setTimeout(() => {
-        alert.className = "hidden"; 
-    }, 3000);
 }
 
 let randomNumber = randomNumberMaker();
