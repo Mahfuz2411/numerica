@@ -36,7 +36,6 @@ const showAlert = (mssg, type) => {
 
 let randomNumber = randomNumberMaker();
 let totalGuess = 0;
-console.log(randomNumber);
 
 
 submitBtn.addEventListener("click", () => {

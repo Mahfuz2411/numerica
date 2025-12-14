@@ -1,59 +1,139 @@
-*{
-    margin: 0px;
-    padding: 0px;
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    min-height: 100vh;
+    color: #fff;
+}
+
+/* Utility */
 .hidden {
     display: none;
 }
 
+/* Header */
 #header {
-    width: auto;
     display: flex;
     justify-content: center;
-    margin: 30px;
+    margin: 30px 0;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
 }
 
+/* Main Layout */
 #bodyDiv {
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 30px;
 }
 
+/* Game Board */
+#gameBoard {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 360px;
+}
+
+/* Input */
 #input {
-    height: 30px;
-    width: 306px;
-    margin-bottom: 10px;
+    height: 40px;
+    width: 100%;
+    padding: 0 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    margin-bottom: 15px;
 }
 
+/* Result box */
 #gb01 {
-    height: 30px;
-    width: 306px;
-    margin-bottom: 10px;
-    border: 2px black solid;
+    height: 40px;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
+}
+
+/* Buttons wrapper */
+#gb02 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Buttons */
+#submitBtn,
+#resetBtn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
 #submitBtn {
-    width: 310px;
-    padding: 10px;
+    background-color: #00c6ff;
+    color: #000;
 }
 
-#text01 {
-    margin-bottom: 10px;
+#submitBtn:hover {
+    background-color: #00a6d6;
+    transform: scale(1.03);
 }
 
 #resetBtn {
-    width: 310px;
-    padding: 10px;
+    background-color: #ff7675;
+    color: #fff;
 }
 
+#resetBtn:hover {
+    background-color: #e05555;
+    transform: scale(1.03);
+}
 
+/* Text Board */
+#textBoard {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    padding: 25px;
+    border-radius: 12px;
+    width: 360px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
 
+#text01 h3 {
+    margin-bottom: 10px;
+}
 
+#text01 ul {
+    list-style: disc;
+    margin-left: 20px;
+}
 
+#text01 li {
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+/* Alert */
 #alert {
     position: fixed;
     top: 20px;
@@ -63,8 +143,10 @@
     color: white;
     font-size: 16px;
     z-index: 1000000000000000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
 
+/* Alert Types */
 .success {
     background-color: #28a745;
 }
@@ -75,4 +157,12 @@
 
 .error {
     background-color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #bodyDiv {
+        flex-direction: column;
+        align-items: center;
+    }
 }
