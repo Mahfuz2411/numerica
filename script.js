@@ -3,6 +3,8 @@ console.log("HEllo");
 let input = document.getElementById("input");
 
 let gb01 = document.getElementById("gb01");
+let gb02 = document.getElementById("gb02");
+let gb03 = document.getElementById("gb03");
 
 let submitBtn = document.getElementById("submitBtn");
 
@@ -66,7 +68,12 @@ submitBtn.addEventListener("click", () => {
             submitBtn.className = "hidden";
             resetBtn.className = "";
         } else {
+            const guess = document.createElement("div");
+            guess.className = "guess";
+            guess.innerText = `${inputText}`;
+            gb03.appendChild(guess);
             gb01.innerText = `${correct} in correct position`;
+            input.value = "";
         }
         
     }
@@ -77,6 +84,8 @@ resetBtn.addEventListener("click", () => {
     randomNumber = randomNumberMaker();
     totalGuess = 0;
 
+    input.value = "";
+    gb03.innerHTML = "";
     submitBtn.className = "";
     resetBtn.className = "hidden";
 });
