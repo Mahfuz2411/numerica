@@ -40,7 +40,7 @@ let randomNumber = randomNumberMaker();
 let totalGuess = 0;
 let gameOver = false;
 
-console.log(randomNumber);
+// console.log(randomNumber);
 
 
 
