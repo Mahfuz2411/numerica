@@ -16,12 +16,20 @@
             <div id="gameBoard">
                 <!-- Main game here -->
                 <div id="gbtop">
-                    <p id="gb03">Total Guess: 0</p>
-                    <button id="gb04" class="tooltip">
-                        📖
+                    <button id="ruleBook" class="tooltip">
+                        🧾
                         <span class="tooltip-text">RuleBook</span>
                     </button>
+                    <button id="memory" class="tooltip">
+                        🏅
+                        <span class="tooltip-text">Top Scores</span>
+                    </button>
                 </div>
+                <div id="gbtop">
+                    
+
+                </div>
+                <p id="gb03">Total Guess: 0</p>
                 <form id="gb01">
                     <input type="number" placeholder="Enter Number here" id="input">
                     <button type="submit" id="submitBtn">
@@ -48,14 +56,23 @@
                     </div>
                 </div>
             </div>
+            <div id="scoreBoard" class="hidden">
+                <h3>Score Board</h3>
+                <div id="scoresList">
+                    <p id="best">Best: </p>
+                    <p id="better">Better: </p>
+                    <p id="good">Good: </p>
+                </div>
+            </div>
         </div>
         <div id="alert" class="hidden">
         </div>
     </div>
     <footer>
         <p>Developed by <a href="https://github.com/Mahfuz2411">Mahfuz</a></p>
-        <p><a href="https://github.com/Mahfuz2411/guess_the_number_game">Click here</a> to get the code, app version 3.0</p>
-        
+        <p><a href="https://github.com/Mahfuz2411/guess_the_number_game">Click here</a> to get the code, app version 5.0
+        </p>
+
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>

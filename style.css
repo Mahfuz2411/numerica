@@ -74,6 +74,7 @@ body {
 #input {
     width: 100%;
     height: 40px;
+    margin-bottom: 15px;
     padding: 0 12px;
     font-size: 16px;
     border-radius: 6px;
@@ -87,7 +88,7 @@ body {
     align-items: center;
 }
 
-#gb04 {
+#ruleBook, #memory {
     font-size: 24px;
     cursor: pointer;
     user-select: none;
@@ -98,20 +99,20 @@ body {
     align-items: center;
     justify-content: center;
     margin-bottom: 15px;
-    width: 15%;
+    width: 49%;
     height: 40px;
     border: none;
     cursor: pointer;
 }
 
-#gb04:focus {
+#ruleBook:focus {
     outline: none;
 }
 
 
 #gb03 {
     height: 40px;
-    width: 83%;
+    width: 100%;
     margin-bottom: 15px;
     border-radius: 6px;
     background: rgba(0, 0, 0, 0.3);
