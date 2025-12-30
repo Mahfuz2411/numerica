@@ -109,6 +109,10 @@ body {
     outline: none;
 }
 
+#memory:focus {
+    outline: none;
+}
+
 
 #gb03 {
     height: 40px;
