@@ -30,7 +30,7 @@ body {
 #bodyDiv {
     display: flex;
     justify-content: space-around;
-    align-items: flex-start;
+    align-items: center;
     gap: 30px;
     padding: 20px;
 }
