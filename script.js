@@ -79,18 +79,18 @@ function loadScoresFromDB() {
 function updateScoresInDB(move) {
   let changed = false;
 
-  if (data.best === null || move > data.best) {
+  if (data.best === null || move < data.best) {
     data.good = data.better;
     data.better = data.best;
     data.best = move;
     changed = true;
   }
-  else if (data.better === null || move > data.better) {
+  else if (data.better === null || move < data.better) {
     data.good = data.better;
     data.better = move;
     changed = true;
   }
-  else if (data.good === null || move > data.good) {
+  else if (data.good === null || move < data.good) {
     data.good = move;
     changed = true;
   }
