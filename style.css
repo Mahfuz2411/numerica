@@ -30,7 +30,7 @@ body {
 #bodyDiv {
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    align-items: flex-start;
     gap: 30px;
     padding: 20px;
 }
@@ -200,7 +200,6 @@ body {
     border-radius: 12px;
     width: 360px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    margin-top: 20px;
 }
 
 #best, #better, #good, #scoreBoard>h3 {
