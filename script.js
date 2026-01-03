@@ -245,21 +245,30 @@ gb01.addEventListener("submit", (e) => {
 });
 
 ruleBook.addEventListener("click", () => {
+
   textBoard.classList.toggle("hidden");
 
   if (!textBoard.classList.contains("hidden")) {
-    showAlert("RuleBook opened", "info");
+    if (!scoreBoard.classList.contains("hidden")) {
+      scoreBoard.classList.toggle("hidden");
+    }
+    showAlert("RuleBook opened", "info", 3000);
   } else {
-    showAlert("RuleBook closed", "info");
+    showAlert("RuleBook closed", "info", 3000);
   }
 });
 
 memory.addEventListener("click", () => {
+
+
   scoreBoard.classList.toggle("hidden");
   if (!scoreBoard.classList.contains("hidden")) {
+    if (!textBoard.classList.contains("hidden")) {
+      textBoard.classList.toggle("hidden");
+    }
     updateScoreBoard();
-    showAlert("Score Board opened", "info");
+    showAlert("Score Board opened", "info", 3000);
   } else {
-    showAlert("Score Board closed", "info");
+    showAlert("Score Board closed", "info", 3000);
   }
 });
