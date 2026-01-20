@@ -265,7 +265,7 @@ const randomNumberMaker = () => {
 let randomNumber = randomNumberMaker();
 let totalGuess = 0;
 let gameOver = false;
-const maxGuesses = 50;
+const maxGuesses = 30;
 
 
 
@@ -307,6 +307,17 @@ const handleSubmit = () => {
 
       gameOver = true;
 
+    } else if (totalGuess >= maxGuesses) {
+      playSound('lose');
+      showAlert(`Game Over! You've reached the limit of ${maxGuesses} guesses`, "error");
+      gameOver = true;
+      submitBtn.innerText = "Reset";
+      Swal.fire({
+        title: "☠️ GAME OVER ☠️",
+        text: `You couldn't guess the number within ${maxGuesses} attempts.\nThe number was: ${randomNumber}`,
+        icon: "error",
+        footer: "Click Reset to try again!",
+      });
     } else {
       if (correct > 0) {
         playSound('correct');
@@ -329,17 +340,6 @@ const handleSubmit = () => {
       });
       digitBoxes[0].focus();
     }
-  }
-
-  if (totalGuess >= maxGuesses && !gameOver) {
-    playSound('lose');
-    submitBtn.innerText = "Reset";
-    Swal.fire({
-      title: "Game Over!",
-      text: `You've used all ${maxGuesses} guesses. The correct number was ${randomNumber}.`,
-      icon: "error",
-    });
-    gameOver = true;
   }
 };
 
