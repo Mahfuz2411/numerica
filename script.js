@@ -1,19 +1,19 @@
 const digitBoxes = document.querySelectorAll(".digitBox");
 
-const rulesPanel = document.getElementById("rulesPanel");
-const leaderboardPanel = document.getElementById("leaderboardPanel");
+const textBoard = document.getElementById("textBoard");
+const scoreBoard = document.getElementById("scoreBoard");
 
 
-const guessForm = document.getElementById("guessForm");
-const guessHistory = document.getElementById("guessHistory");
-const guessCounter = document.getElementById("guessCounter");
+const gb01 = document.getElementById("gb01");
+const gb02 = document.getElementById("gb02");
+const gb03 = document.getElementById("gb03");
 
-const rulesBtn = document.getElementById("rulesBtn");
-const topScoresBtn = document.getElementById("topScoresBtn");
+const ruleBook = document.getElementById("ruleBook");
+const memory = document.getElementById("memory");
 
 const submitBtn = document.getElementById("submitBtn");
 
-const alertBox = document.getElementById("alert");
+const alert = document.getElementById("alert");
 
 // Setup digit input handlers
 digitBoxes.forEach((box, index) => {
@@ -36,7 +36,7 @@ digitBoxes.forEach((box, index) => {
     // Enter key - submit form
     if (e.key === "Enter") {
       e.preventDefault();
-      guessForm.dispatchEvent(new Event("submit"));
+      gb01.dispatchEvent(new Event("submit"));
     }
   });
 });
@@ -144,9 +144,9 @@ function updateScoresInDB(move) {
 
 
 const updateScoreBoard = () => {
-  document.getElementById("bestScore").innerText = `Best: ${data.best === null ? "N/A" : data.best}`;
-  document.getElementById("betterScore").innerText = `Better: ${data.better === null ? "N/A" : data.better}`;
-  document.getElementById("goodScore").innerText = `Good: ${data.good === null ? "N/A" : data.good}`;
+  document.getElementById("best").innerText = `Best: ${data.best === null ? "N/A" : data.best}`;
+  document.getElementById("better").innerText = `Better: ${data.better === null ? "N/A" : data.better}`;
+  document.getElementById("good").innerText = `Good: ${data.good === null ? "N/A" : data.good}`;
 }
 
 
@@ -174,11 +174,11 @@ function getRank(moves) {
 
 
 const showAlert = (mssg, type, time = 3000) => {
-  alertBox.textContent = mssg;
-  alertBox.className = type;
+  alert.textContent = mssg;
+  alert.className = type;
 
   setTimeout(() => {
-    alertBox.className = "hidden";
+    alert.className = "hidden";
   }, time);
 }
 
@@ -231,7 +231,7 @@ const handleSubmit = () => {
       if (inputText[i] == randomNumber[i]) correct++;
     }
 
-    guessCounter.innerText = `Total Guess: ${totalGuess}`;
+    gb03.innerText = `Total Guess: ${totalGuess}`;
     if (correct == 5) {
       submitBtn.innerText = "Reset";
       updateScoresInDB(totalGuess);
@@ -254,7 +254,7 @@ const handleSubmit = () => {
       else guess.classList.add("success");
 
       guess.innerText = `${inputText}: ${correct} in correct position`;
-      guessHistory.appendChild(guess);
+      gb02.appendChild(guess);
       
       // Clear all digit boxes
       digitBoxes.forEach(box => {
@@ -270,18 +270,18 @@ const handleReset = () => {
   totalGuess = 0;
   gameOver = false;
   submitBtn.innerText = "Submit";
-  guessCounter.innerText = `Total Guess: 0`;
+  gb03.innerText = `Total Guess: 0`;
 
   // Clear all digit boxes
   digitBoxes.forEach(box => {
     box.value = "";
   });
   digitBoxes[0].focus();
-  guessHistory.innerHTML = "";
+  gb02.innerHTML = "";
 
 }
 
-guessForm.addEventListener("submit", (e) => {
+gb01.addEventListener("submit", (e) => {
   e.preventDefault();
   if (!gameOver) {
     handleSubmit();
@@ -290,13 +290,13 @@ guessForm.addEventListener("submit", (e) => {
   }
 });
 
-rulesBtn.addEventListener("click", () => {
+ruleBook.addEventListener("click", () => {
 
-  rulesPanel.classList.toggle("hidden");
+  textBoard.classList.toggle("hidden");
 
-  if (!rulesPanel.classList.contains("hidden")) {
-    if (!leaderboardPanel.classList.contains("hidden")) {
-      leaderboardPanel.classList.toggle("hidden");
+  if (!textBoard.classList.contains("hidden")) {
+    if (!scoreBoard.classList.contains("hidden")) {
+      scoreBoard.classList.toggle("hidden");
     }
     showAlert("RuleBook opened", "info", 3000);
   } else {
@@ -304,13 +304,13 @@ rulesBtn.addEventListener("click", () => {
   }
 });
 
-topScoresBtn.addEventListener("click", () => {
+memory.addEventListener("click", () => {
 
 
-  leaderboardPanel.classList.toggle("hidden");
-  if (!leaderboardPanel.classList.contains("hidden")) {
-    if (!rulesPanel.classList.contains("hidden")) {
-      rulesPanel.classList.toggle("hidden");
+  scoreBoard.classList.toggle("hidden");
+  if (!scoreBoard.classList.contains("hidden")) {
+    if (!textBoard.classList.contains("hidden")) {
+      textBoard.classList.toggle("hidden");
     }
     updateScoreBoard();
     showAlert("Score Board opened", "info", 3000);

@@ -10,21 +10,21 @@
 
 <body>
     <div>
-        <h1 id="pageTitle">Guess The Number</h1>
-        <div id="mainContainer">
+        <h1 id="header">Guess The Number</h1>
+        <div id="bodyDiv">
             <div id="gameBoard">
                 <!-- Main game here -->
-                <div id="headerButtons">
-                    <button id="rulesBtn" class="tooltip">
+                <div id="gbtop">
+                    <button id="ruleBook" class="tooltip">
                         🧾
                         <span class="tooltip-text">RuleBook</span>
                     </button>
-                    <button id="topScoresBtn" class="tooltip">
+                    <button id="memory" class="tooltip">
                         🏅
                         <span class="tooltip-text">Top Scores</span>
                     </button>
                 </div>
-                <p id="guessCounter">Total Guess: 0</p>
+                <p id="gb03">Total Guess: 0</p>
                 <div id="digitInputContainer">
                     <input type="text" class="digitBox" maxlength="1" inputmode="numeric" placeholder="0">
                     <input type="text" class="digitBox" maxlength="1" inputmode="numeric" placeholder="0">
@@ -32,17 +32,17 @@
                     <input type="text" class="digitBox" maxlength="1" inputmode="numeric" placeholder="0">
                     <input type="text" class="digitBox" maxlength="1" inputmode="numeric" placeholder="0">
                 </div>
-                <form id="guessForm">
+                <form id="gb01">
                     <button type="submit" id="submitBtn">
                         Submit
                     </button>
                 </form>
-                <div id="guessHistory">
+                <div id="gb02">
 
                 </div>
             </div>
-            <div id="rulesPanel" class="hidden">
-                <div id="rulesContent" class="">
+            <div id="textBoard" class="hidden">
+                <div id="text01" class="">
                     <div>
                         <h3>🎮 How to Play</h3>
                         <ul>
@@ -68,12 +68,12 @@
                     </div>
                 </div>
             </div>
-            <div id="leaderboardPanel" class="hidden">
+            <div id="scoreBoard" class="hidden">
                 <h3>Score Board</h3>
                 <div id="scoresList">
-                    <p id="bestScore">Best: </p>
-                    <p id="betterScore">Better: </p>
-                    <p id="goodScore">Good: </p>
+                    <p id="best">Best: </p>
+                    <p id="better">Better: </p>
+                    <p id="good">Good: </p>
                 </div>
             </div>
         </div>
