@@ -34,10 +34,12 @@ const UI = {
         digitBoxes.forEach(box => {
             box.value = '';
         });
-        // Focus on first box
-        if (digitBoxes.length > 0) {
-            digitBoxes[0].focus();
-        }
+        // Focus on first box after a tiny delay to ensure it sticks
+        setTimeout(() => {
+            if (digitBoxes.length > 0) {
+                digitBoxes[0].focus();
+            }
+        }, 10);
     },
 
     // Clear guess list

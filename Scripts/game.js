@@ -193,11 +193,13 @@ const Game = {
 
         UI.toggleButtons(true);
         
-        // Focus on first digit box
-        const firstBox = document.querySelector('.digit-box');
-        if (firstBox) {
-            firstBox.focus();
-        }
+        // Focus on first digit box after modal closes
+        setTimeout(() => {
+            const firstBox = document.querySelector('.digit-box');
+            if (firstBox) {
+                firstBox.focus();
+            }
+        }, 500);
     },
 
     // Get rank based on guesses
