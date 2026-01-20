@@ -194,6 +194,7 @@ const randomNumberMaker = () => {
 let randomNumber = randomNumberMaker();
 let totalGuess = 0;
 let gameOver = false;
+const maxGuesses = 50;
 
 
 
@@ -208,6 +209,16 @@ const handleSubmit = () => {
 
   if (!inputText || inputText.length === 0) {
     showAlert("No Input Found!", "error");
+  } else if (totalGuess >= maxGuesses) {
+    showAlert(`Game Over! You've reached the limit of ${maxGuesses} guesses`, "error");
+    gameOver = true;
+    submitBtn.innerText = "Reset";
+    Swal.fire({
+      title: "☠️ GAME OVER ☠️",
+      text: `You couldn't guess the number within ${maxGuesses} attempts.\nThe number was: ${randomNumber}`,
+      icon: "error",
+      footer: "Click Reset to try again!",
+    });
   } else if (inputText.length != 5) {
     showAlert("Please fill all 5 digits!", "error");
   } else if (/[^0-9]/.test(inputText)) {
