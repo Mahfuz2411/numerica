@@ -1,6 +1,4 @@
-console.log("HEllo");
-
-const input = document.getElementById("input");
+const digitBoxes = document.querySelectorAll(".digitBox");
 
 const textBoard = document.getElementById("textBoard");
 const scoreBoard = document.getElementById("scoreBoard");
@@ -16,6 +14,32 @@ const memory = document.getElementById("memory");
 const submitBtn = document.getElementById("submitBtn");
 
 const alert = document.getElementById("alert");
+
+// Setup digit input handlers
+digitBoxes.forEach((box, index) => {
+  box.addEventListener("input", (e) => {
+    // Only allow digits
+    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+    
+    // Move to next box if digit entered
+    if (e.target.value.length === 1 && index < digitBoxes.length - 1) {
+      digitBoxes[index + 1].focus();
+    }
+  });
+
+  box.addEventListener("keydown", (e) => {
+    // Backspace - move to previous box
+    if (e.key === "Backspace" && e.target.value === "" && index > 0) {
+      digitBoxes[index - 1].focus();
+    }
+    
+    // Enter key - submit form
+    if (e.key === "Enter") {
+      e.preventDefault();
+      gb01.dispatchEvent(new Event("submit"));
+    }
+  });
+});
 
 
 
@@ -171,22 +195,23 @@ let randomNumber = randomNumberMaker();
 let totalGuess = 0;
 let gameOver = false;
 
-console.log(randomNumber);
-
 
 
 
 const handleSubmit = () => {
-  let inputText = input.value;
-  if (!inputText) {
+  let inputText = "";
+  
+  // Collect all digit values
+  digitBoxes.forEach(box => {
+    inputText += box.value;
+  });
+
+  if (!inputText || inputText.length === 0) {
     showAlert("No Input Found!", "error");
   } else if (inputText.length != 5) {
-    if (inputText.length < 5) {
-      showAlert(`Add ${5 - inputText.length} more digit`, "error");
-    } else {
-      showAlert(`Remove ${inputText.length - 5} digit/s`, "error");
-    }
-
+    showAlert("Please fill all 5 digits!", "error");
+  } else if (/[^0-9]/.test(inputText)) {
+    showAlert("Only digits 0-9 allowed!", "error");
   } else {
     let correct = 0;
     totalGuess++;
@@ -219,7 +244,12 @@ const handleSubmit = () => {
 
       guess.innerText = `${inputText}: ${correct} in correct position`;
       gb02.appendChild(guess);
-      input.value = "";
+      
+      // Clear all digit boxes
+      digitBoxes.forEach(box => {
+        box.value = "";
+      });
+      digitBoxes[0].focus();
     }
   }
 };
@@ -229,8 +259,13 @@ const handleReset = () => {
   totalGuess = 0;
   gameOver = false;
   submitBtn.innerText = "Submit";
+  gb03.innerText = `Total Guess: 0`;
 
-  input.value = "";
+  // Clear all digit boxes
+  digitBoxes.forEach(box => {
+    box.value = "";
+  });
+  digitBoxes[0].focus();
   gb02.innerHTML = "";
 
 }

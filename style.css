@@ -71,15 +71,35 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-#input {
-    width: 100%;
-    height: 40px;
+#digitInputContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
     margin-bottom: 15px;
-    padding: 0 12px;
-    font-size: 16px;
+}
+
+.digitBox {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    text-align: center;
     border-radius: 6px;
-    border: none;
+    border: 2px solid rgba(0, 200, 255, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-weight: bold;
     outline: none;
+    transition: all 0.3s ease;
+}
+
+.digitBox:focus {
+    border-color: #00c8ff;
+    background: rgba(0, 200, 255, 0.2);
+    box-shadow: 0 0 8px rgba(0, 200, 255, 0.5);
+}
+
+.digitBox::placeholder {
+    color: rgba(255, 255, 255, 0.3);
 }
 
 #gbtop {
@@ -98,18 +118,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
     width: 49%;
     height: 40px;
     border: none;
-    cursor: pointer;
 }
 
-#ruleBook:focus {
-    outline: none;
-}
-
-#memory:focus {
+#ruleBook:focus, #memory:focus {
     outline: none;
 }
 
