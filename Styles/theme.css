@@ -1,0 +1,54 @@
+/* ==================== THEME SYSTEM ==================== */
+
+/* Light Theme (Default) */
+:root {
+    --theme-name: 'light';
+}
+
+/* Dark Theme */
+body.dark-theme {
+    --primary-color: #00d4ff;
+    --primary-dark: #0099cc;
+    --bg-primary: linear-gradient(135deg, #0f0f1e, #1a1a2e);
+    --bg-secondary: rgba(20, 20, 35, 0.8);
+    --text-primary: #e8e8f0;
+    --text-secondary: rgba(232, 232, 240, 0.7);
+    --border-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Custom rank colors */
+
+.rank-hacker {
+    background: rgba(255, 100, 100, 0.1);
+    border-color: rgba(255, 100, 100, 0.5);
+}
+
+.rank-legend {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.rank-master {
+    background: rgba(100, 200, 255, 0.1);
+    border-color: rgba(100, 200, 255, 0.5);
+}
+
+.rank-pro {
+    background: rgba(100, 255, 150, 0.1);
+    border-color: rgba(100, 255, 150, 0.5);
+}
+
+.rank-skilled {
+    background: rgba(200, 150, 255, 0.1);
+    border-color: rgba(200, 150, 255, 0.5);
+}
+
+.rank-beginner {
+    background: rgba(255, 180, 100, 0.1);
+    border-color: rgba(255, 180, 100, 0.5);
+}
+
+.rank-noob {
+    background: rgba(150, 150, 150, 0.1);
+    border-color: rgba(150, 150, 150, 0.5);
+}
