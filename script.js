@@ -3,7 +3,6 @@ const digitBoxes = document.querySelectorAll(".digitBox");
 const textBoard = document.getElementById("textBoard");
 const scoreBoard = document.getElementById("scoreBoard");
 
-
 const gb01 = document.getElementById("gb01");
 const gb02 = document.getElementById("gb02");
 const gb03 = document.getElementById("gb03");
@@ -14,6 +13,78 @@ const memory = document.getElementById("memory");
 const submitBtn = document.getElementById("submitBtn");
 
 const alert = document.getElementById("alert");
+
+// Audio context for playing sounds
+let audioContext = null;
+
+// Initialize audio context on first user interaction
+function initAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+// Play sound function
+const playSound = (soundType) => {
+  initAudioContext();
+  
+  if (!audioContext) return;
+
+  let frequency = 0;
+  let duration = 0;
+  let notes = [];
+
+  if (soundType === 'correct') {
+    // Success beep - rising tones
+    notes = [
+      { freq: 523, start: 0, duration: 0.15 },
+      { freq: 659, start: 0.2, duration: 0.15 }
+    ];
+    duration = 0.35;
+  } else if (soundType === 'incorrect') {
+    // Error buzz - falling tones
+    notes = [
+      { freq: 400, start: 0, duration: 0.15 },
+      { freq: 300, start: 0.2, duration: 0.15 }
+    ];
+    duration = 0.35;
+  } else if (soundType === 'win') {
+    // Victory fanfare - rising melody
+    notes = [
+      { freq: 523, start: 0, duration: 0.15 },
+      { freq: 659, start: 0.2, duration: 0.15 },
+      { freq: 784, start: 0.4, duration: 0.15 },
+      { freq: 988, start: 0.6, duration: 0.4 }
+    ];
+    duration = 1;
+  } else if (soundType === 'lose') {
+    // Sad trombone - falling melody
+    notes = [
+      { freq: 400, start: 0, duration: 0.2 },
+      { freq: 300, start: 0.25, duration: 0.2 },
+      { freq: 200, start: 0.5, duration: 0.3 }
+    ];
+    duration = 0.8;
+  }
+
+  const now = audioContext.currentTime;
+
+  notes.forEach(note => {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    osc.frequency.value = note.freq;
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    const startTime = now + note.start;
+    gain.gain.setValueAtTime(0.2, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, startTime + note.duration);
+
+    osc.start(startTime);
+    osc.stop(startTime + note.duration);
+  });
+};
 
 // Setup digit input handlers
 digitBoxes.forEach((box, index) => {
@@ -210,6 +281,7 @@ const handleSubmit = () => {
   if (!inputText || inputText.length === 0) {
     showAlert("No Input Found!", "error");
   } else if (totalGuess >= maxGuesses) {
+    playSound('lose');
     showAlert(`Game Over! You've reached the limit of ${maxGuesses} guesses`, "error");
     gameOver = true;
     submitBtn.innerText = "Reset";
@@ -233,10 +305,10 @@ const handleSubmit = () => {
 
     gb03.innerText = `Total Guess: ${totalGuess}`;
     if (correct == 5) {
+      playSound('win');
       submitBtn.innerText = "Reset";
       updateScoresInDB(totalGuess);
 
-      // showAlert(`You guessed the Number in ${totalGuess} moves`, "success", 10000);
       Swal.fire({
         title: `${getRank(totalGuess).icon}  ${getRank(totalGuess).name}  ${getRank(totalGuess).icon}`,
         text: `You guessed the Number in ${totalGuess} moves`,
@@ -247,6 +319,12 @@ const handleSubmit = () => {
       gameOver = true;
 
     } else {
+      if (correct > 0) {
+        playSound('correct');
+      } else {
+        playSound('incorrect');
+      }
+
       const guess = document.createElement("div");
       guess.classList.add("guess");
 
