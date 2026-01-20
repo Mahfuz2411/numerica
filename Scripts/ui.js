@@ -30,9 +30,14 @@ const UI = {
 
     // Clear input boxes
     clearInputBoxes() {
-        document.querySelectorAll('.digit-box').forEach(box => {
+        const digitBoxes = document.querySelectorAll('.digit-box');
+        digitBoxes.forEach(box => {
             box.value = '';
         });
+        // Focus on first box
+        if (digitBoxes.length > 0) {
+            digitBoxes[0].focus();
+        }
     },
 
     // Clear guess list

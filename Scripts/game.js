@@ -192,6 +192,12 @@ const Game = {
         }
 
         UI.toggleButtons(true);
+        
+        // Focus on first digit box
+        const firstBox = document.querySelector('.digit-box');
+        if (firstBox) {
+            firstBox.focus();
+        }
     },
 
     // Get rank based on guesses
