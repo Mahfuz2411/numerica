@@ -102,13 +102,13 @@ body {
     color: rgba(255, 255, 255, 0.3);
 }
 
-#gbtop {
+#headerButtons {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#ruleBook, #memory {
+#rulesBtn, #topScoresBtn {
     font-size: 24px;
     cursor: pointer;
     user-select: none;
@@ -123,12 +123,12 @@ body {
     border: none;
 }
 
-#ruleBook:focus, #memory:focus {
+#rulesBtn:focus, #topScoresBtn:focus {
     outline: none;
 }
 
 
-#gb03 {
+#guessCounter {
     height: 40px;
     width: 100%;
     margin-bottom: 15px;
@@ -141,14 +141,14 @@ body {
 }
 
 
-#gb01 {
+#guessForm {
     display: flex;
     flex-direction: column;
     gap: 10px;
 
 }
 
-#gb02 {
+#guessHistory {
     display: flex;
     flex-direction: column-reverse;
     gap: 10px;
@@ -194,27 +194,27 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-#text01 h3 {
+#rulesContent h3 {
     margin-bottom: 10px;
     font-size: 20px;
 }
 
-#text01 ul {
+#rulesContent ul {
     margin-left: 20px;
 }
 
-#text01 li {
+#rulesContent li {
     margin-bottom: 12px;
     opacity: 0.9;
     line-height: 1.5;
 }
 
-#text01 strong {
+#rulesContent strong {
     color: #00c6ff;
     font-weight: bold;
 }
 
-#scoreBoard {
+#leaderboardPanel {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
     padding: 25px;
@@ -223,7 +223,7 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-#best, #better, #good, #scoreBoard>h3 {
+#bestScore, #betterScore, #goodScore, #leaderboardPanel>h3 {
     height: 40px;
     width: 100%;
     margin-bottom: 15px;
@@ -235,7 +235,7 @@ body {
     font-weight: bold;
 }
 
-#scoreBoard > h3{
+#leaderboardPanel > h3{
     background-color: #00c6ff;
     color: #000;
     font-size: 16px;
