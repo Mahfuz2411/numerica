@@ -110,6 +110,33 @@ digitBoxes.forEach((box, index) => {
       gb01.dispatchEvent(new Event("submit"));
     }
   });
+
+  // Paste event handler
+  box.addEventListener("paste", (e) => {
+    e.preventDefault();
+    
+    // Get pasted data
+    const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+    
+    // Extract only digits from pasted content
+    const digits = pastedData.replace(/[^0-9]/g, '').split('');
+    
+    // Fill boxes starting from current index
+    digits.forEach((digit, offset) => {
+      if (index + offset < digitBoxes.length) {
+        digitBoxes[index + offset].value = digit;
+      }
+    });
+
+    // Auto-focus to the next empty box or last box
+    let nextEmptyIndex = digitBoxes.findIndex(b => b.value === '');
+    if (nextEmptyIndex === -1) {
+      nextEmptyIndex = digitBoxes.length - 1;
+    }
+    digitBoxes[nextEmptyIndex].focus();
+
+    showAlert("✓ Pasted successfully!", "success", 2000);
+  });
 });
 
 
