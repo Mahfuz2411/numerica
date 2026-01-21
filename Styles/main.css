@@ -1522,10 +1522,13 @@ body {
     /* Games List */
     .games-grid {
         gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+        padding: 0 10px;
     }
 
     .game-card {
         padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
     }
 
     .game-icon {
@@ -1544,7 +1547,13 @@ body {
     /* Game Layout */
     .game-layout-container {
         gap: var(--spacing-md);
-        padding: var(--spacing-md);
+        padding: var(--spacing-md) 10px;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .game-content-area {
+        padding: 0 10px;
     }
 
     .sidebar-nav {
@@ -1560,25 +1569,39 @@ body {
 
     /* Stats */
     .stats-bar {
-        gap: 6px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
         margin-bottom: var(--spacing-md);
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .stat-item {
-        padding: 6px 8px;
+        padding: 3px 4px;
+        gap: 1px;
+        min-width: 0;
+        max-width: 100%;
     }
 
     .stat-label {
-        font-size: 0.65rem;
+        font-size: 0.5rem;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .stat-value {
-        font-size: 1.2rem;
+        font-size: 0.85rem;
+        line-height: 1.1;
     }
 
     /* Input */
     .input-section {
-        padding: var(--spacing-md);
+        padding: var(--spacing-md) 10px;
+        margin: 0 auto;
+        max-width: 100%;
     }
 
     .input-label {
@@ -1588,29 +1611,46 @@ body {
 
     .digit-input-container {
         gap: 4px;
+        margin: 0 auto;
+        justify-content: center;
     }
 
     .digit-box {
-        width: 40px;
-        height: 40px;
-        font-size: 14px;
+        width: 38px;
+        height: 38px;
+        font-size: 13px;
+        flex: 0 0 38px;
     }
 
     /* Buttons */
     .buttons-section {
         gap: 6px;
-        margin-bottom: var(--spacing-md);
+        margin-top: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+        padding: 0 10px;
     }
 
     .btn {
-        padding: 8px 12px;
+        padding: 10px 14px;
         font-size: 0.7rem;
+    }
+
+    /* Game Board */
+    .game-board {
+        padding: var(--spacing-sm) 10px;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .page-header {
+        padding: 0 10px;
     }
 
     /* Content */
     .content-card {
-        padding: var(--spacing-md);
-        margin-bottom: var(--spacing-md);
+        padding: var(--spacing-md) 10px;
+        margin: 0 auto var(--spacing-md);
+        max-width: 100%;
     }
 
     .content-card h3 {
