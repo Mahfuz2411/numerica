@@ -12,6 +12,9 @@ const APP = {
     init() {
         console.log(`🎮 Initializing ${GAME_NAME} v${VERSION}...`);
         
+        // Update version displays
+        this.updateVersionDisplays();
+        
         // Load theme preference
         this.loadTheme();
         
@@ -45,6 +48,20 @@ const APP = {
             setTimeout(() => {
                 loader.style.display = 'none';
             }, 500);
+        }
+    },
+
+    // Update version displays across the app
+    updateVersionDisplays() {
+        const loaderVersion = document.getElementById('loaderVersion');
+        const footerVersion = document.getElementById('footerVersion');
+        
+        if (loaderVersion) {
+            loaderVersion.textContent = `v${VERSION}`;
+        }
+        
+        if (footerVersion) {
+            footerVersion.textContent = `${GAME_NAME} v${VERSION}`;
         }
     },
 
