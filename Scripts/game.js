@@ -157,37 +157,46 @@ const Game = {
             Sounds.play('win');
             const rank = this.getRank(this.totalGuess);
             
+            // Update best scores
             Database.updateScores(this.totalGuess);
             
-            Swal.fire({
+            // Track win stats
+            Database.trackValidSubmission(this.totalGuess, true);
+            
+            UI.showPopup({
                 title: `${rank.icon} ${rank.name} ${rank.icon}`,
-                text: `You guessed the number in ${this.totalGuess} moves!`,
                 html: `
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p><strong>Rank Title:</strong> ${rank.title}</p>
-                        <p><strong>Number:</strong> ${this.randomNumber}</p>
+                    <p style="margin-bottom: 12px; font-size: 0.95rem;">You guessed the number in <strong>${this.totalGuess}</strong> moves!</p>
+                    <div style="text-align: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0, 198, 255, 0.3);">
+                        <p style="margin: 6px 0; font-size: 0.85rem;"><strong>Rank Title:</strong> ${rank.title}</p>
+                        <p style="margin: 6px 0; font-size: 1.2rem; color: var(--primary-color); font-weight: bold;">Number: ${this.randomNumber}</p>
                     </div>
                 `,
-                icon: 'success',
-                confirmButtonColor: '#00c6ff',
-                confirmButtonText: 'Play Again'
-            }).then(() => {
-                this.reset();
+                confirmButtonText: 'Play Again',
+                onConfirm: () => {
+                    this.reset();
+                }
             });
 
             UI.updateStats();
         } else {
             Sounds.play('lose');
             
-            Swal.fire({
+            // Track loss stats (only if max guesses were attempted)
+            if (this.totalGuess >= this.maxGuesses) {
+                Database.trackValidSubmission(this.totalGuess, false);
+            }
+            
+            UI.showPopup({
                 title: '☠️ GAME OVER ☠️',
-                text: `You couldn't guess the number within ${this.maxGuesses} attempts.`,
-                html: `<p style="font-size: 1.5rem; color: #00c6ff; font-weight: bold;">${this.randomNumber}</p>`,
-                icon: 'error',
-                confirmButtonColor: '#00c6ff',
-                confirmButtonText: 'Try Again'
-            }).then(() => {
-                this.reset();
+                html: `
+                    <p style="margin-bottom: 12px; font-size: 0.95rem;">You couldn't guess the number within <strong>${this.maxGuesses}</strong> attempts.</p>
+                    <p style="font-size: 1.5rem; color: var(--primary-color); font-weight: bold; margin-top: 12px;">The Number: ${this.randomNumber}</p>
+                `,
+                confirmButtonText: 'Try Again',
+                onConfirm: () => {
+                    this.reset();
+                }
             });
         }
 
@@ -227,12 +236,26 @@ const Game = {
         console.log('🎮 Game reset - Ready to play!');
     },
 
+    // Reset game completely (for going back to games list)
+    resetGame() {
+        this.randomNumber = '';
+        this.totalGuess = 0;
+        this.gameOver = false;
+        
+        UI.clearInputBoxes();
+        UI.clearGuessList();
+        UI.updateStats();
+        UI.toggleButtons(false);
+    },
+
     // Generate a random 5-digit number
     generateRandomNumber() {
         let result = '';
         for (let i = 0; i < 5; i++) {
             result += Math.floor(Math.random() * 10);
         }
+        // DEBUG: Remove this console.log when done debugging
+        console.log('🎯 DEBUG - Random Number:', result);
         return result;
     }
 };

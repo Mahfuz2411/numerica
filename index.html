@@ -45,9 +45,7 @@
                 <h1 class="logo">🎮 Numerica</h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="#game" class="nav-link active" data-page="game">🎯 Play</a></li>
-                <li><a href="#rules" class="nav-link" data-page="rules">📖 Rules</a></li>
-                <li><a href="#scores" class="nav-link" data-page="scores">🏅 Scores</a></li>
+                <li><a href="#games" class="nav-link active" data-page="games">🎮 Games</a></li>
                 <li><a href="#about" class="nav-link" data-page="about">ℹ️ About</a></li>
                 <li class="nav-item-separator"></li>
                 <li>
@@ -61,140 +59,23 @@
 
     <!-- Main Container -->
     <main class="main-container">
-        <!-- Game Page -->
-        <section id="game-page" class="page active">
+        <!-- Games List Page -->
+        <section id="games-page" class="page active">
             <div class="page-header">
-                <h2>🎯 Guess The Number</h2>
-                <p class="subtitle">Guess the 5-digit number. You have <span id="attemptLeft">30</span> attempts.</p>
+                <h2>🎮 Available Games</h2>
+                <p class="subtitle">Choose a game to play</p>
             </div>
 
-            <div class="game-board">
-                <!-- Stats Bar -->
-                <div class="stats-bar">
-                    <div class="stat-item">
-                        <span class="stat-label">Attempts Left:</span>
-                        <span class="stat-value" id="attemptsLeftDisplay">30</span>
+            <div class="games-grid">
+                <!-- Game Card: Guess The Number -->
+                <div class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3 class="game-title">Guess The Number</h3>
+                    <p class="game-description">Crack the 5-digit code. Test your logical thinking and climb the rankings!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🟢 Easy</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Guesses Made:</span>
-                        <span class="stat-value" id="guessesMadeDisplay">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Rank:</span>
-                        <span class="stat-value" id="rankDisplay">-</span>
-                    </div>
-                </div>
-
-                <!-- Input Section -->
-                <div class="input-section">
-                    <label class="input-label">Enter 5 Digits:</label>
-                    <div class="digit-input-container">
-                        <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
-                        <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
-                        <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
-                        <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
-                        <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
-                    </div>
-                </div>
-
-                <!-- Buttons Section -->
-                <div class="buttons-section">
-                    <form id="submitForm" class="form-submit">
-                        <button type="submit" id="submitBtn" class="btn btn-primary">Submit Guess</button>
-                    </form>
-                    <button id="resetBtn" class="btn btn-secondary" style="display:none;">New Game</button>
-                </div>
-
-                <!-- Feedback Section -->
-                <div class="feedback-section">
-                    <div id="guessList" class="guess-list"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Rules Page -->
-        <section id="rules-page" class="page">
-            <div class="page-header">
-                <h2>📋 How to Play</h2>
-            </div>
-
-            <div class="content-card">
-                <div class="rules-content">
-                    <h3>🎮 Game Rules</h3>
-                    <ul class="rules-list">
-                        <li>
-                            <strong>Objective:</strong> Guess the randomly generated 5-digit number
-                        </li>
-                        <li>
-                            <strong>Input:</strong> Enter exactly 5 digits (0-9) in the boxes provided
-                        </li>
-                        <li>
-                            <strong>Feedback:</strong> After each guess, you'll see how many digits are in the correct
-                            position
-                        </li>
-                        <li>
-                            <strong>Game End:</strong> Win by guessing all 5 digits in their correct positions
-                        </li>
-                        <li>
-                            <strong>Attempt Limit:</strong> You have a maximum of 30 attempts to guess correctly
-                        </li>
-                        <li>
-                            <strong>Paste Support:</strong> You can paste numbers using Ctrl+V or right-click paste
-                        </li>
-                    </ul>
-
-                    <h3>🏆 Ranking System</h3>
-                    <div class="ranking-table">
-                        <div class="rank-item rank-hacker">😈 HACKER - Totally Unfair (≤5 guesses)</div>
-                        <div class="rank-item rank-legend">👑 LEGEND - Elite Brain (≤8 guesses)</div>
-                        <div class="rank-item rank-master">🧠 MASTER - Mind Reader (≤11 guesses)</div>
-                        <div class="rank-item rank-pro">🎯 PRO - Tactical Player (≤14 guesses)</div>
-                        <div class="rank-item rank-skilled">⚡ SKILLED - Getting Better (≤17 guesses)</div>
-                        <div class="rank-item rank-beginner">🐣 BEGINNER - Learning Mode (≤20 guesses)</div>
-                        <div class="rank-item rank-noob">☠️ NOOB - Try Again (>20 guesses)</div>
-                    </div>
-
-                    <h3>🎵 Sound Effects</h3>
-                    <ul class="features-list">
-                        <li>✓ Sound plays when your guess has matching digits</li>
-                        <li>✓ Different sound for incorrect guesses</li>
-                        <li>✓ Victory fanfare when you win</li>
-                        <li>✓ Game over sound after 30 attempts</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Scores Page -->
-        <section id="scores-page" class="page">
-            <div class="page-header">
-                <h2>🏅 Top Scores</h2>
-                <p class="subtitle">Your best performances</p>
-            </div>
-
-            <div class="scores-board">
-                <div class="score-card">
-                    <div class="score-rank">🥇 Best</div>
-                    <div class="score-value" id="bestScore">-</div>
-                    <div class="score-label">guesses</div>
-                </div>
-                <div class="score-card">
-                    <div class="score-rank">🥈 Better</div>
-                    <div class="score-value" id="betterScore">-</div>
-                    <div class="score-label">guesses</div>
-                </div>
-                <div class="score-card">
-                    <div class="score-rank">🥉 Good</div>
-                    <div class="score-value" id="goodScore">-</div>
-                    <div class="score-label">guesses</div>
-                </div>
-            </div>
-
-            <div class="content-card">
-                <h3>📊 Statistics</h3>
-                <div class="stats-info">
-                    <p>Your scores are saved locally in your browser using IndexedDB.</p>
-                    <p>Clear your browser data to reset your scores.</p>
+                    <button class="btn btn-primary game-play-btn" data-game="guess-the-number">Play Now</button>
                 </div>
             </div>
         </section>
@@ -203,51 +84,290 @@
         <section id="about-page" class="page">
             <div class="page-header">
                 <h2>ℹ️ About Numerica</h2>
-                <p class="subtitle">Version history and updates</p>
+                <p class="subtitle">Learn more about the game</p>
             </div>
 
             <div class="content-card">
-                <h3>📱 About This Game</h3>
-                <p>Numerica is a fun number-guessing game where you try to crack a 5-digit code. Test your logical thinking and improve your ranking!</p>
+                <h3>📱 About Numerica</h3>
+                <p>Numerica is a fun number-guessing game where you try to crack a 5-digit code. Test your logical thinking and improve your ranking with the 7-tier ranking system!</p>
                 <p style="margin-top: 1rem; opacity: 0.8; font-size: 0.9rem;">Developed with ❤️ for number enthusiasts</p>
             </div>
 
             <div class="content-card" style="margin-top: 1.5rem;">
                 <h3>📈 Current Version</h3>
-                
                 <div class="version-item">
                     <div class="version-header">
-                        <span class="version-badge">v7.0</span>
+                        <span class="version-badge">v8.0</span>
                         <span class="version-date">Latest</span>
                     </div>
                     <ul class="version-features">
-                        <li>🧭 Multi-page navigation (Play, Rules, Scores, About)</li>
+                        <li>🎮 Multi-game platform architecture</li>
+                        <li>📱 Sidebar navigation for game pages</li>
+                        <li>🧭 Games list page</li>
+                        <li>⚙️ Settings page</li>
                         <li>🌙 Dark/Light theme toggle with preference saving</li>
-                        <li>📊 Real-time stats bar (Attempts, Guesses, Rank)</li>
-                        <li>⌨️ Arrow key navigation between digit boxes</li>
-                        <li>🎨 Modern card-based responsive design</li>
-                        <li>📱 Optimized for all screen sizes</li>
-                        <li>✨ Enhanced visual effects and animations</li>
+                        <li>📊 Real-time stats bar</li>
+                        <li>⌨️ Arrow key navigation</li>
+                        <li>🎨 Modern responsive design</li>
                     </ul>
                 </div>
             </div>
 
             <div class="content-card" style="margin-top: 1.5rem;">
                 <h3>🔗 Links</h3>
-                <p><a href="https://github.com/Mahfuz2411/guess_the_number_game" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">View on GitHub →</a></p>
+                <p><a href="https://github.com/Mahfuz2411/numerica" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">View on GitHub →</a></p>
                 <p style="margin-top: 0.5rem;"><a href="https://github.com/Mahfuz2411" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">Developer Profile →</a></p>
             </div>
         </section>
-    </main>
+
+        <!-- Game Layout Container (Sidebar + Board) -->
+        <div class="game-layout-container">
+            <!-- Sidebar Navigation -->
+            <aside class="game-sidebar">
+                <nav class="sidebar-nav">
+                    <button class="sidebar-link active" data-section="play">🎯 Play</button>
+                    <button class="sidebar-link" data-section="rules">📖 Rules</button>
+                    <button class="sidebar-link" data-section="scores">🏅 Scores</button>
+                    <button class="sidebar-link" data-section="settings">⚙️ Settings</button>
+                </nav>
+            </aside>
+
+            <!-- Game Content Area -->
+            <main class="game-content-area">
+                <!-- Play Section -->
+                <section id="play-section" class="section-content active">
+                    <div class="page-header">
+                        <h2>🎯 Guess The Number</h2>
+                        <p class="subtitle">Guess the 5-digit number. You have <span id="attemptLeft">30</span> attempts.</p>
+                    </div>
+
+                    <div class="game-board">
+                        <!-- Stats Bar -->
+                        <div class="stats-bar">
+                            <div class="stat-item">
+                                <span class="stat-label">Attempts Left:</span>
+                                <span class="stat-value" id="attemptsLeftDisplay">30</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Guesses Made:</span>
+                                <span class="stat-value" id="guessesMadeDisplay">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Rank:</span>
+                                <span class="stat-value" id="rankDisplay">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Input Section -->
+                        <div class="input-section">
+                            <label class="input-label">Enter 5 Digits:</label>
+                            <div class="digit-input-container">
+                                <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
+                                <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
+                                <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
+                                <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
+                                <input type="text" class="digit-box" maxlength="1" inputmode="numeric" placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- Buttons Section -->
+                        <div class="buttons-section">
+                            <form id="submitForm" class="form-submit">
+                                <button type="submit" id="submitBtn" class="btn btn-primary">Submit Guess</button>
+                            </form>
+                            <button id="resetBtn" class="btn btn-secondary" style="display:none;">New Game</button>
+                            <button id="backToGamesBtn" class="btn btn-secondary" style="display:none;">Back to Games</button>
+                        </div>
+
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <div id="guessList" class="guess-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Rules Section -->
+                <section id="rules-section" class="section-content">
+                    <div class="page-header">
+                        <h2>📋 How to Play</h2>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="rules-content">
+                            <h3>🎮 Game Rules</h3>
+                            <ul class="rules-list">
+                                <li>
+                                    <strong>Objective:</strong> Guess the randomly generated 5-digit number
+                                </li>
+                                <li>
+                                    <strong>Input:</strong> Enter exactly 5 digits (0-9) in the boxes provided
+                                </li>
+                                <li>
+                                    <strong>Feedback:</strong> After each guess, you'll see how many digits are in the correct
+                                    position
+                                </li>
+                                <li>
+                                    <strong>Game End:</strong> Win by guessing all 5 digits in their correct positions
+                                </li>
+                                <li>
+                                    <strong>Attempt Limit:</strong> You have a maximum of 30 attempts to guess correctly
+                                </li>
+                                <li>
+                                    <strong>Paste Support:</strong> You can paste numbers using Ctrl+V or right-click paste
+                                </li>
+                            </ul>
+
+                            <h3>🏆 Ranking System</h3>
+                            <div class="ranking-table">
+                                <div class="rank-item rank-hacker">😈 HACKER - Totally Unfair (≤5 guesses)</div>
+                                <div class="rank-item rank-legend">👑 LEGEND - Elite Brain (≤8 guesses)</div>
+                                <div class="rank-item rank-master">🧠 MASTER - Mind Reader (≤11 guesses)</div>
+                                <div class="rank-item rank-pro">🎯 PRO - Tactical Player (≤14 guesses)</div>
+                                <div class="rank-item rank-skilled">⚡ SKILLED - Getting Better (≤17 guesses)</div>
+                                <div class="rank-item rank-beginner">🐣 BEGINNER - Learning Mode (≤20 guesses)</div>
+                                <div class="rank-item rank-noob">☠️ NOOB - Try Again (>20 guesses)</div>
+                            </div>
+
+                            <h3>🎵 Sound Effects</h3>
+                            <ul class="features-list">
+                                <li>✓ Sound plays when your guess has matching digits</li>
+                                <li>✓ Different sound for incorrect guesses</li>
+                                <li>✓ Victory fanfare when you win</li>
+                                <li>✓ Game over sound after 30 attempts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Scores Section -->
+                <section id="scores-section" class="section-content">
+                    <div class="page-header">
+                        <h2>🏅 Top Scores</h2>
+                        <p class="subtitle">Your best performances</p>
+                    </div>
+
+                    <div class="scores-board">
+                        <div class="score-card">
+                            <div class="score-rank">🥇 Best</div>
+                            <div class="score-value" id="bestScore">-</div>
+                            <div class="score-label">guesses</div>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-rank">🥈 Better</div>
+                            <div class="score-value" id="betterScore">-</div>
+                            <div class="score-label">guesses</div>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-rank">🥉 Good</div>
+                            <div class="score-value" id="goodScore">-</div>
+                            <div class="score-label">guesses</div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>📊 Player Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-box-content">
+                                    <div class="stat-box-label">Overall Rank</div>
+                                    <div class="stat-box-value" id="overallRankStat">Unranked</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon">🎮</div>
+                                <div class="stat-box-content">
+                                    <div class="stat-box-label">Total Games</div>
+                                    <div class="stat-box-value" id="totalGamesStat">0</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon">✅</div>
+                                <div class="stat-box-content">
+                                    <div class="stat-box-label">Wins</div>
+                                    <div class="stat-box-value" id="completedGamesStat">0</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-box-content">
+                                    <div class="stat-box-label">Win Ratio</div>
+                                    <div class="stat-box-value" id="winRatioStat">0%</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon">🎲</div>
+                                <div class="stat-box-content">
+                                    <div class="stat-box-label">Avg Guesses</div>
+                                    <div class="stat-box-value" id="avgGuessStat">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card" style="margin-top: 1.5rem; opacity: 0.8; font-size: 0.9rem;">
+                        <p>📝 Your scores and statistics are saved locally in your browser using IndexedDB.</p>
+                        <p>🗑️ Clear your browser data to reset your scores and statistics.</p>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="section-content">
+                    <div class="page-header">
+                        <h2>⚙️ Settings</h2>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>🔊 Sound</h3>
+                        <div class="setting-item">
+                            <label for="soundToggle" class="setting-label">Enable Sound Effects</label>
+                            <input type="checkbox" id="soundToggle" class="toggle-checkbox" checked>
+                        </div>
+                    </div>
+
+                    <div class="content-card" style="margin-top: 1.5rem;">
+                        <h3>🗑️ Data Management</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 12px; color: var(--text-secondary);">Reset all your scores, statistics, and game data. This action cannot be undone.</p>
+                        <button id="resetDbBtn" class="btn btn-danger">Reset All Data</button>
+                    </div>
+                </section>
+            </main>
+        </div>
 
     <!-- Alert Container -->
     <div id="alertContainer" class="alert-container"></div>
 
+    <!-- Custom Popup Modal -->
+    <div id="customPopup" class="custom-popup-overlay">
+        <div class="custom-popup">
+            <button class="popup-close" id="popupClose">&times;</button>
+            <div class="popup-header" id="popupHeader"></div>
+            <div class="popup-body" id="popupBody"></div>
+            <div class="popup-buttons">
+                <button class="btn btn-primary" id="popupConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <p>Developed by <a href="https://github.com/Mahfuz2411">Mahfuz</a></p>
-            <p><a href="https://github.com/Mahfuz2411/guess_the_number_game">Click here</a> to get the code, app version 7.0 </p>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4 class="footer-title">About</h4>
+                <p class="footer-text">Developed by <a href="https://github.com/Mahfuz2411" target="_blank">Mahfuz</a></p>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-title">Project</h4>
+                <p class="footer-text"><a href="https://github.com/Mahfuz2411/numerica" target="_blank">View on GitHub</a></p>
+                <p class="footer-text">Numerica v8.1</p>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-title">Connect</h4>
+                <p class="footer-text"><a href="https://github.com/Mahfuz2411" target="_blank">GitHub Profile</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Numerica. All rights reserved.</p>
         </div>
     </footer>
 
@@ -257,7 +377,6 @@
     <script src="Scripts/ui.js"></script>
     <script src="Scripts/sounds.js"></script>
     <script src="Scripts/database.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
