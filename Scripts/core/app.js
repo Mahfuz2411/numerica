@@ -1,7 +1,7 @@
 // ==================== APP.JS - Main Application Entry Point ====================
 
 const GAME_NAME = 'Numerica';
-const VERSION = '8.1';
+const VERSION = '8.5';
 
 const APP = {
     currentPage: 'games',
@@ -25,7 +25,47 @@ const APP = {
         // Initialize database
         Database.init();
         
+        // Restore previous navigation state (if any)
+        this.restoreNavigationState();
+        
+        // Hide loader after everything is ready
+        setTimeout(() => {
+            this.hideLoader();
+        }, 500);
+        
         console.log('✓ App initialized');
+    },
+
+    // Hide page loader
+    hideLoader() {
+        const loader = document.getElementById('pageLoader');
+        if (loader) {
+            loader.classList.add('hidden');
+            // Remove from DOM after transition
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    },
+
+    // Restore navigation state from sessionStorage
+    async restoreNavigationState() {
+        const savedPage = sessionStorage.getItem('currentPage');
+        const savedGame = sessionStorage.getItem('currentGame');
+        const savedSection = sessionStorage.getItem('currentSection');
+
+        if (savedGame) {
+            // User was playing a game - restore game and section
+            console.log(`🔄 Restoring game: ${savedGame}, section: ${savedSection || 'play'}`);
+            await this.playGame(savedGame);
+            if (savedSection) {
+                this.showGameSection(savedSection);
+            }
+        } else if (savedPage && savedPage !== 'games') {
+            // User was on a different top-level page
+            console.log(`🔄 Restoring page: ${savedPage}`);
+            this.navigateToPage(savedPage);
+        }
     },
 
     // Load game scripts dynamically
@@ -120,6 +160,11 @@ const APP = {
         });
 
         this.currentPage = page;
+        
+        // Save state to sessionStorage
+        sessionStorage.setItem('currentPage', page);
+        sessionStorage.removeItem('currentGame');
+        sessionStorage.removeItem('currentSection');
     },
 
     // Setup game card buttons
@@ -173,6 +218,11 @@ const APP = {
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
         });
+
+        // Save game state to sessionStorage
+        sessionStorage.setItem('currentGame', gameId);
+        sessionStorage.setItem('currentSection', 'play');
+        sessionStorage.removeItem('currentPage');
 
         console.log(`✓ Game "${gameId}" started`);
     },
@@ -249,6 +299,11 @@ const APP = {
             link.classList.toggle('active', link.dataset.section === section);
         });
 
+        // Save section state to sessionStorage
+        if (this.currentGame) {
+            sessionStorage.setItem('currentSection', section);
+        }
+
         // Trigger section-specific actions
         if (section === 'scores') {
             UI.updateScoresDisplay();
@@ -277,6 +332,11 @@ const APP = {
         
         this.currentPage = 'games';
         this.currentGame = null;
+
+        // Clear game state from sessionStorage
+        sessionStorage.setItem('currentPage', 'games');
+        sessionStorage.removeItem('currentGame');
+        sessionStorage.removeItem('currentSection');
 
         console.log('✓ Back to games list');
     },
