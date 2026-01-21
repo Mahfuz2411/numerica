@@ -213,7 +213,7 @@ const Game = {
 
     // Get rank based on guesses
     getRank(guesses) {
-        if (guesses <= 5) return { name: 'HACKER', title: 'Totally Unfair', icon: '😈' };
+        if (guesses <= 5) return { name: 'HACKER', title: 'Totally Unfair', icon: '�' };
         if (guesses <= 8) return { name: 'LEGEND', title: 'Elite Brain', icon: '👑' };
         if (guesses <= 11) return { name: 'MASTER', title: 'Mind Reader', icon: '🧠' };
         if (guesses <= 14) return { name: 'PRO', title: 'Tactical Player', icon: '🎯' };
@@ -234,18 +234,6 @@ const Game = {
         UI.toggleButtons(false);
         
         console.log('🎮 Game reset - Ready to play!');
-    },
-
-    // Reset game completely (for going back to games list)
-    resetGame() {
-        this.randomNumber = '';
-        this.totalGuess = 0;
-        this.gameOver = false;
-        
-        UI.clearInputBoxes();
-        UI.clearGuessList();
-        UI.updateStats();
-        UI.toggleButtons(false);
     },
 
     // Generate a random 5-digit number

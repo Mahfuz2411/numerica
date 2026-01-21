@@ -137,14 +137,16 @@ const Database = {
         const avgGuess = this.data.totalGames > 0 ? (this.data.totalGuesses / this.data.totalGames).toFixed(1) : 0;
         const winRatio = this.data.totalGames > 0 ? ((this.data.totalWins / this.data.totalGames) * 100).toFixed(1) : 0;
         
-        // Overall rank based on avg guess (lower is better)
+        // Overall rank based on avg guess using game's ranking system
         let overallRank = 'Unranked';
         if (this.data.totalGames > 0) {
-            if (avgGuess <= 10) overallRank = 'S - Master';
-            else if (avgGuess <= 15) overallRank = 'A - Expert';
-            else if (avgGuess <= 20) overallRank = 'B - Advanced';
-            else if (avgGuess <= 30) overallRank = 'C - Intermediate';
-            else overallRank = 'D - Beginner';
+            if (avgGuess <= 5) overallRank = 'HACKER';
+            else if (avgGuess <= 8) overallRank = 'LEGEND';
+            else if (avgGuess <= 11) overallRank = 'MASTER';
+            else if (avgGuess <= 14) overallRank = 'PRO';
+            else if (avgGuess <= 17) overallRank = 'SKILLED';
+            else if (avgGuess <= 20) overallRank = 'BEGINNER';
+            else overallRank = 'NOOB';
         }
 
         return {

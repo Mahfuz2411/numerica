@@ -458,21 +458,18 @@ body {
     line-height: 1.8;
 }
 
-.rules-list,
-.features-list {
+.rules-list {
     list-style: none;
     padding-left: 0;
 }
 
-.rules-list li,
-.features-list li {
+.rules-list li {
     margin-bottom: var(--spacing-md);
     padding-left: var(--spacing-lg);
     position: relative;
 }
 
-.rules-list li:before,
-.features-list li:before {
+.rules-list li:before {
     content: "▸";
     position: absolute;
     left: 0;
@@ -765,6 +762,9 @@ body {
     margin-top: auto;
     width: 100%;
     min-height: auto;
+    border-radius: 12px 12px 0 0;
+    margin: var(--spacing-xl) auto 0;
+    max-width: calc(100% - 20px);
 }
 
 .footer-container {
@@ -773,15 +773,17 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
     padding-bottom: var(--spacing-lg);
-    border-bottom: 1px solid rgba(0, 198, 255, 0.1);
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 198, 255, 0.2);
 }
 
 .footer-section {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
+    align-items: center;
 }
 
 .footer-title {
@@ -815,7 +817,6 @@ body {
 .footer-bottom {
     text-align: center;
     padding-top: var(--spacing-md);
-    border-top: 1px solid rgba(0, 198, 255, 0.1);
 }
 
 .footer-bottom p {
@@ -1433,10 +1434,6 @@ body {
         font-size: 1.5rem;
     }
 
-    .stat-box-label {
-        font-size: 0.7rem;
-    }
-
     .stat-box-value {
         font-size: 1rem;
     }
@@ -1737,8 +1734,7 @@ body {
 
 .stat-box {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
     padding: 12px;
     background: linear-gradient(135deg, rgba(0, 198, 255, 0.05), rgba(0, 198, 255, 0.02));
     border: 1px solid rgba(0, 198, 255, 0.2);
@@ -1753,12 +1749,14 @@ body {
 }
 
 .stat-icon {
-    font-size: 1.8rem;
-    flex-shrink: 0;
+    font-size: 1.2rem;
+    margin-right: 4px;
 }
 
 .stat-box-content {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .stat-box-label {
@@ -1766,7 +1764,9 @@ body {
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .stat-box-value {

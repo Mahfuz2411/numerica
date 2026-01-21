@@ -186,7 +186,7 @@ const APP = {
 
     // Back to games button handler
     backToGames() {
-        Game.resetGame();
+        Game.reset();
         document.querySelector('.game-layout-container').classList.remove('active');
         document.getElementById('games-page').classList.add('active');
         
