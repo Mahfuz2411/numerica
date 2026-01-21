@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://Mahfuz2411.github.io/guess_the_number_game/sitemap.xml
+Sitemap: https://Mahfuz2411.github.io/numerica/sitemap.xml
