@@ -53,6 +53,13 @@ const Database = {
                 console.log('✓ Scores loaded:', this.data);
             }
         };
+
+        // Update UI after scores are loaded
+        transaction.oncomplete = () => {
+            if (typeof GuessTheNumberUI !== 'undefined' && GuessTheNumberUI.updateScoresDisplay) {
+                GuessTheNumberUI.updateScoresDisplay();
+            }
+        };
     },
 
     // Update scores in database
@@ -78,7 +85,7 @@ const Database = {
         const transaction = this.db.transaction('scores', 'readwrite');
         const store = transaction.objectStore('scores');
 
-        store.put({
+        const putRequest = store.put({
             id: 1,
             best: this.data.best,
             better: this.data.better,
@@ -88,6 +95,14 @@ const Database = {
             totalGuesses: this.data.totalGuesses
         });
 
+        putRequest.onsuccess = () => {
+            console.log('✓ Put request success');
+        };
+
+        putRequest.onerror = (e) => {
+            console.error('❌ Put request error:', e.target.error);
+        };
+
         transaction.oncomplete = () => {
             console.log('✓ Scores updated:', this.data);
             if (UI && UI.updateScoresDisplay) {
@@ -95,8 +110,8 @@ const Database = {
             }
         };
 
-        transaction.onerror = () => {
-            console.error('Failed to update scores');
+        transaction.onerror = (e) => {
+            console.error('❌ Transaction error:', e.target.error);
         };
     },
 
@@ -111,7 +126,7 @@ const Database = {
         const transaction = this.db.transaction('scores', 'readwrite');
         const store = transaction.objectStore('scores');
 
-        store.put({
+        const putRequest = store.put({
             id: 1,
             best: this.data.best,
             better: this.data.better,
@@ -121,6 +136,14 @@ const Database = {
             totalGuesses: this.data.totalGuesses
         });
 
+        putRequest.onsuccess = () => {
+            console.log('✓ Put request success');
+        };
+
+        putRequest.onerror = (e) => {
+            console.error('❌ Put request error:', e.target.error);
+        };
+
         transaction.oncomplete = () => {
             console.log('✓ Game stats updated:', {
                 total: this.data.totalGames,
@@ -129,14 +152,46 @@ const Database = {
             });
         };
 
-        transaction.onerror = () => {
-            console.error('Failed to update game stats');
+        transaction.onerror = (e) => {
+            console.error('❌ Transaction error:', e.target.error);
+        };
+    },
+
+    // Update game stats without changing wins
+    updateGameStats() {
+        const transaction = this.db.transaction('scores', 'readwrite');
+        const store = transaction.objectStore('scores');
+
+        const putRequest = store.put({
+            id: 1,
+            best: this.data.best,
+            better: this.data.better,
+            good: this.data.good,
+            totalGames: this.data.totalGames,
+            totalWins: this.data.totalWins,
+            totalGuesses: this.data.totalGuesses
+        });
+
+        putRequest.onsuccess = () => {
+            console.log('✓ Put request success');
+        };
+
+        putRequest.onerror = (e) => {
+            console.error('❌ Put request error:', e.target.error);
+        };
+
+        transaction.oncomplete = () => {
+            console.log('✓ Guess count updated:', this.data.totalGuesses);
+        };
+
+        transaction.onerror = (e) => {
+            console.error('❌ Transaction error:', e.target.error);
         };
     },
 
     // Get rank based on guesses - Single source of truth for all games
     getRank(guesses) {
-        if (guesses <= 5) return { name: 'HACKER', title: 'Totally Unfair', icon: '�' };
+        if (guesses <= 5) return { name: 'HACKER', title: 'Totally Unfair', icon: '😈' };
         if (guesses <= 8) return { name: 'LEGEND', title: 'Elite Brain', icon: '👑' };
         if (guesses <= 11) return { name: 'MASTER', title: 'Mind Reader', icon: '🧠' };
         if (guesses <= 14) return { name: 'PRO', title: 'Tactical Player', icon: '🎯' };

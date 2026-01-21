@@ -41,11 +41,11 @@ const APP = {
             // Determine game paths
             const gamePath = `Scripts/games/${gameId}`;
             
+            // Load game UI script first (creates UI alias)
+            await this.loadScript(`${gamePath}/ui.js`);
+            
             // Load game logic script
             await this.loadScript(`${gamePath}/game.js`);
-            
-            // Load game UI script
-            await this.loadScript(`${gamePath}/ui.js`);
             
             // Load game CSS
             await this.loadCSS(`Styles/games/${gameId}.css`);

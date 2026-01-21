@@ -136,36 +136,58 @@ const GuessTheNumberUI = {
         }
 
         // Create cancel button if needed
+        let cancelBtn = null;
         if (options.onCancel) {
-            const cancelBtn = document.createElement('button');
+            cancelBtn = document.createElement('button');
             cancelBtn.id = 'popupCancel';
             cancelBtn.className = 'btn btn-secondary';
             cancelBtn.textContent = options.cancelButtonText || 'Cancel';
             buttonsContainer.appendChild(cancelBtn);
-
-            // Handle cancel button click
-            cancelBtn.onclick = (e) => {
-                e.stopPropagation();
-                overlay.classList.remove('active');
-                options.onCancel();
-            };
         }
 
         overlay.classList.add('active');
+
+        // Handle Enter key to confirm (add after a small delay to avoid immediate trigger)
+        const handleEnterKey = (e) => {
+            if (e.key === 'Enter' && overlay.classList.contains('active')) {
+                e.preventDefault();
+                e.stopPropagation();
+                confirmBtn.click();
+            }
+        };
+        
+        // Add listener after a short delay to prevent immediate triggering from the same Enter key that opened the popup
+        setTimeout(() => {
+            document.addEventListener('keydown', handleEnterKey);
+        }, 100);
 
         // Handle confirm button
         confirmBtn.onclick = (e) => {
             e.stopPropagation();
             overlay.classList.remove('active');
+            document.removeEventListener('keydown', handleEnterKey);
             if (options.onConfirm) {
                 options.onConfirm();
             }
         };
 
+        // Handle cancel button click
+        if (cancelBtn) {
+            cancelBtn.onclick = (e) => {
+                e.stopPropagation();
+                overlay.classList.remove('active');
+                document.removeEventListener('keydown', handleEnterKey);
+                if (options.onCancel) {
+                    options.onCancel();
+                }
+            };
+        }
+
         // Handle close button
         closeBtn.onclick = (e) => {
             e.stopPropagation();
             overlay.classList.remove('active');
+            document.removeEventListener('keydown', handleEnterKey);
             if (options.onCancel) {
                 options.onCancel();
             } else if (options.onConfirm) {
@@ -177,7 +199,6 @@ const GuessTheNumberUI = {
         overlay.onclick = (e) => {
             if (e.target === overlay) {
                 e.stopPropagation();
-                // Don't close on outside click for dangerous operations
             }
         };
     }

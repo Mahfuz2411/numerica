@@ -68,7 +68,7 @@ const GuessTheNumberGame = {
                 }
                 digitBoxes[nextEmptyIndex].focus();
 
-                UI.showAlert('✓ Numbers pasted successfully!', 'success', 2000);
+                GuessTheNumberUI.showAlert('✓ Numbers pasted successfully!', 'success', 2000);
             });
         });
 
@@ -97,17 +97,17 @@ const GuessTheNumberGame = {
 
         // Validation
         if (!inputText || inputText.length === 0) {
-            UI.showAlert('No input found!', 'error');
+            GuessTheNumberUI.showAlert('No input found!', 'error');
             return;
         }
 
         if (inputText.length !== 5) {
-            UI.showAlert('Please fill all 5 digits!', 'error');
+            GuessTheNumberUI.showAlert('Please fill all 5 digits!', 'error');
             return;
         }
 
         if (/[^0-9]/.test(inputText)) {
-            UI.showAlert('Only digits 0-9 allowed!', 'error');
+            GuessTheNumberUI.showAlert('Only digits 0-9 allowed!', 'error');
             return;
         }
 
@@ -123,8 +123,19 @@ const GuessTheNumberGame = {
             if (inputText[i] === this.randomNumber[i]) correct++;
         }
 
+        // Track: increment total guesses and game count (only first submission)
+        // Call trackValidSubmission with isWin=null to just track guesses without counting wins
+        if (this.totalGuess === 0) {
+            // First submission - count this as a new game
+            Database.trackValidSubmission(1, false);
+        } else {
+            // Subsequent submissions - just add to guess count
+            Database.data.totalGuesses++;
+            Database.updateGameStats();
+        }
+
         this.totalGuess++;
-        UI.updateStats();
+        GuessTheNumberUI.updateStats();
 
         // Check if won
         if (correct === 5) {
@@ -145,8 +156,8 @@ const GuessTheNumberGame = {
             Sounds.play('incorrect');
         }
 
-        UI.addGuessToList(inputText, correct);
-        UI.clearInputBoxes();
+        GuessTheNumberUI.addGuessToList(inputText, correct);
+        GuessTheNumberUI.clearInputBoxes();
     },
 
     // End game - win or lose
@@ -160,10 +171,11 @@ const GuessTheNumberGame = {
             // Update best scores
             Database.updateScores(this.totalGuess);
             
-            // Track win stats
-            Database.trackValidSubmission(this.totalGuess, true);
+            // Track win count (save to database)
+            Database.data.totalWins++;
+            Database.updateGameStats();
             
-            UI.showPopup({
+            GuessTheNumberUI.showPopup({
                 title: `${rank.icon} ${rank.name} ${rank.icon}`,
                 html: `
                     <p style="margin-bottom: 12px; font-size: 0.95rem;">You guessed the number in <strong>${this.totalGuess}</strong> moves!</p>
@@ -178,16 +190,12 @@ const GuessTheNumberGame = {
                 }
             });
 
-            UI.updateStats();
+            GuessTheNumberUI.updateStats();
         } else {
             Sounds.play('lose');
+            // Loss - no additional tracking needed (already counted in submitGuess)
             
-            // Track loss stats (only if max guesses were attempted)
-            if (this.totalGuess >= this.maxGuesses) {
-                Database.trackValidSubmission(this.totalGuess, false);
-            }
-            
-            UI.showPopup({
+            GuessTheNumberUI.showPopup({
                 title: '☠️ GAME OVER ☠️',
                 html: `
                     <p style="margin-bottom: 12px; font-size: 0.95rem;">You couldn't guess the number within <strong>${this.maxGuesses}</strong> attempts.</p>
@@ -200,7 +208,7 @@ const GuessTheNumberGame = {
             });
         }
 
-        UI.toggleButtons(true);
+        GuessTheNumberUI.toggleButtons(true);
         
         // Focus on first digit box after modal closes
         setTimeout(() => {
@@ -222,10 +230,10 @@ const GuessTheNumberGame = {
         this.totalGuess = 0;
         this.gameOver = false;
         
-        UI.clearInputBoxes();
-        UI.clearGuessList();
-        UI.updateStats();
-        UI.toggleButtons(false);
+        GuessTheNumberUI.clearInputBoxes();
+        GuessTheNumberUI.clearGuessList();
+        GuessTheNumberUI.updateStats();
+        GuessTheNumberUI.toggleButtons(false);
         
         console.log('🎮 Guess The Number - Game reset - Ready to play!');
     },
@@ -236,6 +244,8 @@ const GuessTheNumberGame = {
         for (let i = 0; i < 5; i++) {
             result += Math.floor(Math.random() * 10);
         }
+        // DEBUG: Console log for debugging
+        console.log('🎯 DEBUG - Random Number:', result);
         return result;
     }
 };
