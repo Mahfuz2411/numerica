@@ -268,15 +268,15 @@ body {
 .digit-input-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
     margin-bottom: var(--spacing-md);
     flex-wrap: nowrap;
 }
 
 .digit-box {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
     text-align: center;
     border-radius: var(--radius-md);
     border: 2px solid var(--border-color);
@@ -313,12 +313,13 @@ body {
     display: flex;
     gap: var(--spacing-md);
     justify-content: center;
+    align-items: center;
     margin-bottom: var(--spacing-lg);
     flex-wrap: wrap;
 }
 
 .form-submit {
-    display: contents;
+    margin: 0;
 }
 
 .btn {
