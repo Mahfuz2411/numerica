@@ -57,8 +57,8 @@ export default function MinesweeperRulesPage() {
         <ul className="space-y-2 text-sm sm:text-base text-muted-foreground list-disc list-inside">
           <li>Start by clicking corners and edges - they have fewer adjacent cells</li>
           <li>Use flags to mark suspected mines and keep track of dangerous areas</li>
-          <li>Look for patterns: a "1" touching one unrevealed cell means that cell is a mine</li>
-          <li>A "1" touching only one unrevealed cell with other revealed cells means that cell is a mine</li>
+          <li>Look for patterns: a &quot;1&quot; touching one unrevealed cell means that cell is a mine</li>
+          <li>A &quot;1&quot; touching only one unrevealed cell with other revealed cells means that cell is a mine</li>
           <li>Count flags and compare with the mine counter to track your progress</li>
           <li>Take your time - rushing often leads to mistakes!</li>
         </ul>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Bomb, Flag, Clock, Trophy, RotateCcw } from "lucide-react"
 import { Card } from "@/components/ui/card"
@@ -38,16 +38,25 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
   const flags = countFlags(board)
   const remainingMines = config.mines - flags
 
+  const resetGame = useCallback(() => {
+    const config = DIFFICULTIES[difficulty]
+    setBoard(createEmptyBoard(config.rows, config.cols))
+    setGameState("playing")
+    setStartTime(null)
+    setCurrentTime(0)
+    setIsFirstClick(true)
+  }, [difficulty])
+
   useEffect(() => {
     setMounted(true)
     resetGame()
-  }, [])
+  }, [resetGame])
 
   useEffect(() => {
     if (difficulty) {
       resetGame()
     }
-  }, [difficulty])
+  }, [difficulty, resetGame])
 
   useEffect(() => {
     if (gameState === "playing" && startTime) {
@@ -57,15 +66,6 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
       return () => clearInterval(interval)
     }
   }, [gameState, startTime])
-
-  const resetGame = () => {
-    const config = DIFFICULTIES[difficulty]
-    setBoard(createEmptyBoard(config.rows, config.cols))
-    setGameState("playing")
-    setStartTime(null)
-    setCurrentTime(0)
-    setIsFirstClick(true)
-  }
 
   const handleCellClick = (row: number, col: number) => {
     if (gameState !== "playing" || board[row][col].state !== "hidden") return
