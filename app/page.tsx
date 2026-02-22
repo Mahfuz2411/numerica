@@ -240,13 +240,13 @@ export default function HomePage() {
         >
           <h2 className="text-3xl font-bold">About the Project</h2>
           <p className="text-muted-foreground">
-            Numerica is a Progressive Web App built with cutting-edge technologies
-            including Next.js 14, TypeScript, Tailwind CSS, and Framer Motion.
-            Our mission is to provide smooth, buttery gaming experiences with
-            beautiful animations and intuitive design.
+            Numerica is a modern Progressive Web App featuring a collection of classic logic 
+            and puzzle games. Built with Next.js 14, TypeScript, and Tailwind CSS, it delivers 
+            a seamless gaming experience. Play offline, track your progress, 
+            and challenge yourself with multiple difficulty levels.
           </p>
           <p className="text-sm text-muted-foreground">
-            Created with ❤️ by the Numerica team
+            Created with ❤️ by the Mahfuz Ibne Syful
           </p>
         </motion.div>
       </section>
