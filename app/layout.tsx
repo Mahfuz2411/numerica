@@ -6,9 +6,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://numerica247.vercel.app"),
   title: "Numerica - Gaming Hub",
-  description: "Experience smooth, engaging logical games with beautiful animations",
-  keywords: ["games", "logical games", "online games", "tic-tac-toe", "memory game"],
+  description: "Play classic logic games including Tic-Tac-Toe, Memory Card, and Minesweeper. Challenge yourself with multiple difficulty levels and track your scores!",
+  keywords: ["games", "logical games", "online games", "tic-tac-toe", "memory game", "minesweeper", "puzzle games"],
   authors: [{ name: "Numerica Team" }],
   manifest: "/manifest.json",
   icons: {
@@ -17,8 +18,24 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Numerica - Gaming Hub",
-    description: "Experience smooth, engaging logical games with beautiful animations",
+    description: "Play classic logic games including Tic-Tac-Toe, Memory Card, and Minesweeper. Challenge yourself with multiple difficulty levels!",
     type: "website",
+    url: "https://numerica247.vercel.app",
+    siteName: "Numerica",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Numerica - Gaming Hub",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Numerica - Gaming Hub",
+    description: "Play classic logic games including Tic-Tac-Toe, Memory Card, and Minesweeper!",
+    images: ["/og-image.png"],
   },
 };
 
