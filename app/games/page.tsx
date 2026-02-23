@@ -29,6 +29,7 @@ const games = [
     icon: "🎯",
     difficulty: "Easy",
     players: "1-2 Players",
+    disabled: false, // Set to true to disable this game
   },
   {
     id: "memory-card",
@@ -37,6 +38,7 @@ const games = [
     icon: "🃏",
     difficulty: "Medium",
     players: "1 Player",
+    disabled: false, // Set to true to disable this game
   },
   {
     id: "minesweeper",
@@ -45,6 +47,16 @@ const games = [
     icon: "💣",
     difficulty: "Medium",
     players: "1 Player",
+    disabled: false, // Set to true to disable this game
+  },
+  {
+    id: "whack-a-mole",
+    title: "Whack-a-Mole",
+    description: "Test your reflexes! Click the moles as fast as you can before they disappear!",
+    icon: "🦫",
+    difficulty: "Easy to Hard",
+    players: "1 Player",
+    disabled: true, // Set to true to disable this game
   },
 ]
 
@@ -72,18 +84,14 @@ export default function GamesPage() {
           >
             {games.map((game) => (
               <motion.div key={game.id} variants={item}>
-                <Link href={`/games/${game.id}`}>
-                  <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:border-primary/50 overflow-hidden">
+                {game.disabled ? (
+                  <Card className="h-full overflow-hidden opacity-60 cursor-not-allowed">
                     <CardHeader className="space-y-4">
-                      <motion.div
-                        whileHover={{ scale: 1.2, rotate: 10 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                        className="text-6xl"
-                      >
+                      <div className="text-6xl opacity-50">
                         {game.icon}
-                      </motion.div>
+                      </div>
                       <div>
-                        <CardTitle className="group-hover:text-primary transition-colors">
+                        <CardTitle className="text-muted-foreground">
                           {game.title}
                         </CardTitle>
                         <CardDescription className="mt-2">
@@ -93,19 +101,54 @@ export default function GamesPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex gap-2 text-xs">
-                        <span className="px-2 py-1 rounded-full bg-primary/10 text-primary">
+                        <span className="px-2 py-1 rounded-full bg-muted text-muted-foreground">
                           {game.difficulty}
                         </span>
-                        <span className="px-2 py-1 rounded-full bg-secondary">
+                        <span className="px-2 py-1 rounded-full bg-muted text-muted-foreground">
                           {game.players}
                         </span>
                       </div>
-                      <Button className="w-full" variant="outline">
-                        Play Now
+                      <Button className="w-full" variant="outline" disabled>
+                        Coming Soon
                       </Button>
                     </CardContent>
                   </Card>
-                </Link>
+                ) : (
+                  <Link href={`/games/${game.id}`}>
+                    <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:border-primary/50 overflow-hidden">
+                      <CardHeader className="space-y-4">
+                        <motion.div
+                          whileHover={{ scale: 1.2, rotate: 10 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                          className="text-6xl"
+                        >
+                          {game.icon}
+                        </motion.div>
+                        <div>
+                          <CardTitle className="group-hover:text-primary transition-colors">
+                            {game.title}
+                          </CardTitle>
+                          <CardDescription className="mt-2">
+                            {game.description}
+                          </CardDescription>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex gap-2 text-xs">
+                          <span className="px-2 py-1 rounded-full bg-primary/10 text-primary">
+                            {game.difficulty}
+                          </span>
+                          <span className="px-2 py-1 rounded-full bg-secondary">
+                            {game.players}
+                          </span>
+                        </div>
+                        <Button className="w-full" variant="outline">
+                          Play Now
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )}
               </motion.div>
             ))}
           </motion.div>

@@ -30,12 +30,28 @@ const featuredGames = [
     description: "Classic 3x3 strategy game. Challenge your mind!",
     icon: "🎯",
     href: "/games/tic-tac-toe",
+    disabled: false, // Set to true to disable this game
   },
   {
     title: "Memory Card",
     description: "Test your memory with matching cards",
     icon: "🃏",
     href: "/games/memory-card",
+    disabled: false, // Set to true to disable this game
+  },
+  {
+    title: "Minesweeper",
+    description: "Clear the board without hitting any mines!",
+    icon: "💣",
+    href: "/games/minesweeper",
+    disabled: false, // Set to true to disable this game
+  },
+  {
+    title: "Whack-a-Mole",
+    description: "Test your reflexes in this arcade classic!",
+    icon: "🦫",
+    href: "/games/whack-a-mole",
+    disabled: false, // Set to true to disable this game
   },
 ]
 
@@ -161,28 +177,47 @@ export default function HomePage() {
           >
             {featuredGames.map((game, index) => (
               <motion.div key={game.href} variants={item}>
-                <Link href={game.href}>
-                  <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:border-primary/50">
+                {game.disabled ? (
+                  <Card className="h-full opacity-60 cursor-not-allowed">
                     <CardHeader>
-                      <motion.div
-                        whileHover={{ scale: 1.2, rotate: 10 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                        className="text-5xl mb-4"
-                      >
+                      <div className="text-5xl mb-4 opacity-50">
                         {game.icon}
-                      </motion.div>
-                      <CardTitle className="group-hover:text-primary transition-colors">
+                      </div>
+                      <CardTitle className="text-muted-foreground">
                         {game.title}
                       </CardTitle>
                       <CardDescription>{game.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button variant="outline" className="w-full">
-                        Play Now
+                      <Button variant="outline" className="w-full" disabled>
+                        Coming Soon
                       </Button>
                     </CardContent>
                   </Card>
-                </Link>
+                ) : (
+                  <Link href={game.href}>
+                    <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:border-primary/50">
+                      <CardHeader>
+                        <motion.div
+                          whileHover={{ scale: 1.2, rotate: 10 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                          className="text-5xl mb-4"
+                        >
+                          {game.icon}
+                        </motion.div>
+                        <CardTitle className="group-hover:text-primary transition-colors">
+                          {game.title}
+                        </CardTitle>
+                        <CardDescription>{game.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Button variant="outline" className="w-full">
+                          Play Now
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )}
               </motion.div>
             ))}
           </motion.div>
