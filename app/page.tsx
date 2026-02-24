@@ -53,6 +53,13 @@ const featuredGames = [
     href: "/games/whack-a-mole",
     disabled: false, // Set to true to disable this game
   },
+  {
+    title: "Sudoku",
+    description: "Fill the 9×9 grid with logic and patience!",
+    icon: "🔢",
+    href: "/games/sudoku",
+    disabled: false, // Set to true to disable this game
+  },
 ]
 
 const features = [
