@@ -23,45 +23,6 @@ const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 },
 }
-
-const featuredGames = [
-  {
-    title: "Tic-Tac-Toe",
-    description: "Classic 3x3 strategy game. Challenge your mind!",
-    icon: "🎯",
-    href: "/games/tic-tac-toe",
-    disabled: false, // Set to true to disable this game
-  },
-  {
-    title: "Memory Card",
-    description: "Test your memory with matching cards",
-    icon: "🃏",
-    href: "/games/memory-card",
-    disabled: false, // Set to true to disable this game
-  },
-  {
-    title: "Minesweeper",
-    description: "Clear the board without hitting any mines!",
-    icon: "💣",
-    href: "/games/minesweeper",
-    disabled: false, // Set to true to disable this game
-  },
-  {
-    title: "Whack-a-Mole",
-    description: "Test your reflexes in this arcade classic!",
-    icon: "🦫",
-    href: "/games/whack-a-mole",
-    disabled: false, // Set to true to disable this game
-  },
-  {
-    title: "Sudoku",
-    description: "Fill the 9×9 grid with logic and patience!",
-    icon: "🔢",
-    href: "/games/sudoku",
-    disabled: false, // Set to true to disable this game
-  },
-]
-
 const features = [
   {
     icon: Grid3x3,
@@ -82,7 +43,6 @@ const features = [
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
-  const gamesRef = useRef<HTMLDivElement>(null)
   
   // Parallax for hero section
   const { scrollYProgress: heroScrollY } = useScroll({
@@ -92,14 +52,6 @@ export default function HomePage() {
   
   const heroY = useTransform(heroScrollY, [0, 1], ["0%", "30%"])
   const heroOpacity = useTransform(heroScrollY, [0, 0.5, 1], [1, 0.8, 0.3])
-  
-  // Parallax for games section
-  const { scrollYProgress: gamesScrollY } = useScroll({
-    target: gamesRef,
-    offset: ["start end", "end start"],
-  })
-  
-  const gamesY = useTransform(gamesScrollY, [0, 1], ["-10%", "10%"])
 
   return (
     <MainLayout>
@@ -153,80 +105,6 @@ export default function HomePage() {
             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
               <Link href="/settings">Settings</Link>
             </Button>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Featured Games */}
-      <section ref={gamesRef} className="container px-4 py-16 relative">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="space-y-8"
-        >
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl font-bold text-center"
-          >
-            Featured Games
-          </motion.h2>
-          
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            style={{ y: gamesY }}
-            className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto"
-          >
-            {featuredGames.map((game, index) => (
-              <motion.div key={game.href} variants={item}>
-                {game.disabled ? (
-                  <Card className="h-full opacity-60 cursor-not-allowed">
-                    <CardHeader>
-                      <div className="text-5xl mb-4 opacity-50">
-                        {game.icon}
-                      </div>
-                      <CardTitle className="text-muted-foreground">
-                        {game.title}
-                      </CardTitle>
-                      <CardDescription>{game.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button variant="outline" className="w-full" disabled>
-                        Coming Soon
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Link href={game.href}>
-                    <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:border-primary/50">
-                      <CardHeader>
-                        <motion.div
-                          whileHover={{ scale: 1.2, rotate: 10 }}
-                          transition={{ type: "spring", stiffness: 400 }}
-                          className="text-5xl mb-4"
-                        >
-                          {game.icon}
-                        </motion.div>
-                        <CardTitle className="group-hover:text-primary transition-colors">
-                          {game.title}
-                        </CardTitle>
-                        <CardDescription>{game.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Button variant="outline" className="w-full">
-                          Play Now
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                )}
-              </motion.div>
-            ))}
           </motion.div>
         </motion.div>
       </section>

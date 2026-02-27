@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad-whack-a-mole" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#grad-whack-a-mole)"/>
+  
+  <!-- Pattern overlay -->
+  <rect width="1200" height="630" fill="url(#pattern)" opacity="0.1"/>
+  
+  <!-- Dark overlay for better text contrast -->
+  <rect width="1200" height="630" fill="rgba(0,0,0,0.3)"/>
+  
+  <!-- Main content card -->
+  <rect x="100" y="140" width="1000" height="350" rx="20" fill="rgba(255,255,255,0.95)" filter="url(#shadow)"/>
+  
+  <!-- Game emoji -->
+  <text x="600" y="280" font-size="120" text-anchor="middle" font-family="Arial, sans-serif">🦫</text>
+  
+  <!-- Game name -->
+  <text x="600" y="380" font-size="64" font-weight="bold" text-anchor="middle" font-family="Arial, sans-serif" fill="#1a1a1a">Whack-a-Mole</text>
+  
+  <!-- Description -->
+  <text x="600" y="430" font-size="28" text-anchor="middle" font-family="Arial, sans-serif" fill="#666666">Test your reflexes</text>
+  
+  <!-- Numerica branding -->
+  <text x="600" y="480" font-size="24" font-weight="600" text-anchor="middle" font-family="Arial, sans-serif" fill="#4f46e5">Numerica</text>
+  <text x="600" y="505" font-size="16" text-anchor="middle" font-family="Arial, sans-serif" fill="#888888">Gaming Hub</text>
+  
+  <!-- Decorative corner elements -->
+  <circle cx="150" cy="190" r="30" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="1050" cy="440" r="40" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="200" cy="450" r="25" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="1000" cy="200" r="35" fill="rgba(255,255,255,0.15)"/>
+</svg>

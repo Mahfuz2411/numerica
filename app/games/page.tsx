@@ -56,12 +56,12 @@ const games = [
     icon: "🦫",
     difficulty: "Easy to Hard",
     players: "1 Player",
-    disabled: false, // Set to true to disable this game
+    disabled: true, // Set to true to disable this game
   },
   {
     id: "sudoku",
     title: "Sudoku",
-    description: "Classic number puzzle. Fill the 9×9 grid using logic and deduction!",
+    description: "Classic number puzzle. Fill the 9x9 grid using logic and deduction!",
     icon: "🔢",
     difficulty: "Easy to Expert",
     players: "1 Player",
