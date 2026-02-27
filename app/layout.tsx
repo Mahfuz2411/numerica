@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { websiteSchema, organizationSchema } from "@/lib/seo/structured-data";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,6 +13,9 @@ export const metadata: Metadata = {
   keywords: ["games", "logical games", "online games", "tic-tac-toe", "memory game", "minesweeper", "puzzle games"],
   authors: [{ name: "Numerica Team" }],
   manifest: "/manifest.json",
+  verification: {
+    google: "JhATpWCNUbrrsgR6PDhMEhBSe5Lj95up3U2aFytYXWM",
+  },
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
@@ -53,6 +57,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"

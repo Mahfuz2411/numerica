@@ -1,5 +1,7 @@
 import { MinesweeperGame } from "@/components/games/minesweeper-game"
 import type { Metadata } from "next"
+import Script from "next/script"
+import { gameSchemas, breadcrumbSchema } from "@/lib/seo/structured-data"
 
 export const metadata: Metadata = {
   title: "Minesweeper - Numerica | Play Classic Mine Sweeping Game Online",
@@ -29,5 +31,25 @@ export const metadata: Metadata = {
 }
 
 export default function MinesweeperPlayPage() {
-  return <MinesweeperGame gameId="minesweeper" />
+  const breadcrumbs = breadcrumbSchema([
+    { name: 'Home', url: 'https://numerica247.vercel.app' },
+    { name: 'Games', url: 'https://numerica247.vercel.app/games' },
+    { name: 'Minesweeper', url: 'https://numerica247.vercel.app/games/minesweeper' }
+  ])
+
+  return (
+    <>
+      <Script
+        id="minesweeper-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(gameSchemas.minesweeper) }}
+      />
+      <Script
+        id="minesweeper-breadcrumb"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
+      />
+      <MinesweeperGame gameId="minesweeper" />
+    </>
+  )
 }
