@@ -67,6 +67,15 @@ const games = [
     players: "1 Player",
     disabled: false, // Set to true to disable this game
   },
+  {
+    id: "2048",
+    title: "2048",
+    description: "Combine numbered tiles to reach 2048! Addictive sliding tile puzzle game.",
+    icon: "🎲",
+    difficulty: "Medium",
+    players: "1 Player",
+    disabled: false, // Set to true to disable this game
+  },
 ]
 
 export default function GamesPage() {
