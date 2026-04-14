@@ -22,8 +22,8 @@ export function Navbar() {
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <div className="container flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center space-x-2 group">
+      <div className="container flex h-16 items-center justify-between gap-4 px-4">
+        <Link href="/" className="flex items-center gap-2 whitespace-nowrap group">
           <motion.div
             whileHover={{ rotate: 360, scale: 1.1 }}
             transition={{ duration: 0.5 }}
@@ -35,7 +35,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center gap-2 md:gap-3 flex-wrap justify-end">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -43,7 +43,7 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-colors hover:text-primary",
+                  "relative inline-flex whitespace-nowrap px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-colors hover:text-primary",
                   isActive ? "text-foreground" : "text-muted-foreground"
                 )}
               >

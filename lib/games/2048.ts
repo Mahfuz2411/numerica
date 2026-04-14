@@ -98,7 +98,7 @@ export function moveTiles(state: GameState2048, direction: Direction): GameState
   if (state.isGameOver) return state
 
   // Clone tiles and reset merge flags
-  let tiles = state.tiles.map(t => ({
+  let tiles: Tile[] = state.tiles.map(t => ({
     ...t,
     isNew: false,
     mergedFrom: undefined,

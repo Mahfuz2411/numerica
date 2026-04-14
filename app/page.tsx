@@ -1,13 +1,11 @@
 "use client"
 
-import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import Link from "next/link"
-import { Gamepad2, Zap, Trophy, Sparkles, Grid3x3, WifiOff } from "lucide-react"
+import { Gamepad2, Trophy, Grid3x3, WifiOff } from "lucide-react"
 import { MainLayout } from "@/components/layout/main-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollIndicator } from "@/components/scroll-indicator"
 
 const container = {
   hidden: { opacity: 0 },
@@ -42,24 +40,14 @@ const features = [
 ]
 
 export default function HomePage() {
-  const heroRef = useRef<HTMLDivElement>(null)
-  
-  // Parallax for hero section
-  const { scrollYProgress: heroScrollY } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  })
-  
-  const heroY = useTransform(heroScrollY, [0, 1], ["0%", "30%"])
-  const heroOpacity = useTransform(heroScrollY, [0, 0.5, 1], [1, 0.8, 0.3])
-
   return (
     <MainLayout>
-      <ScrollIndicator />
       {/* Hero Section */}
-      <section ref={heroRef} className="container px-4 py-12 md:py-20 lg:py-32 relative overflow-hidden">
+      <section className="container px-4 py-12 md:py-20 lg:py-32 relative overflow-hidden">
         <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
           className="text-center space-y-4 md:space-y-6"
         >
           <motion.div
