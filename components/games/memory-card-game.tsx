@@ -135,137 +135,118 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
     }
 
     return (
-        <div className="space-y-1.5 sm:space-y-2 md:space-y-3 max-w-2xl mx-auto">
-            {/* Game Stats */}
-            <UICard className="p-2">
-                <div className="flex justify-around items-center gap-1.5">
-                    <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                            <Zap className="h-3 w-3" />
-                            <span className="text-xs">Moves</span>
-                        </div>
-                        <p className="text-sm sm:text-base font-bold">{moves}</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            <span className="text-xs">Time</span>
-                        </div>
-                        <p className="text-sm sm:text-base font-bold">{formatTime(currentTime)}</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-xs text-muted-foreground">Pairs</p>
-                        <p className="text-sm sm:text-base font-bold">
-                            {matchedPairs} / 8
-                        </p>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+            <UICard className="p-4">
+                <div className="mx-auto w-[min(62vh,30rem)] max-w-full">
+                    <div className="grid grid-cols-4 gap-2">{!mounted || cards.length === 0 ? (
+                        Array.from({ length: 16 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="w-full aspect-square rounded-md border-2 bg-card/50 animate-pulse"
+                            />
+                        ))
+                    ) : (
+                        cards.map((card, index) => (
+                            <motion.div
+                                key={card.id}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.03 }}
+                            >
+                                <button
+                                    onClick={() => handleCardClick(card.id)}
+                                    disabled={card.isFlipped || card.isMatched || isChecking}
+                                    className="w-full aspect-square disabled:cursor-not-allowed"
+                                >
+                                    <motion.div
+                                        className="relative w-full h-full"
+                                        animate={{ rotateY: card.isFlipped || card.isMatched ? 180 : 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        style={{ transformStyle: "preserve-3d" }}
+                                    >
+                                        <div
+                                            className={cn(
+                                                "absolute inset-0 rounded-md border-2 flex items-center justify-center",
+                                                "bg-gradient-to-br from-primary to-primary/60",
+                                                card.isMatched && "opacity-0"
+                                            )}
+                                            style={{ backfaceVisibility: "hidden" }}
+                                        >
+                                            <span className="text-xl md:text-2xl">🃏</span>
+                                        </div>
+
+                                        <div
+                                            className={cn(
+                                                "absolute inset-0 rounded-md border-2 flex items-center justify-center",
+                                                "bg-card",
+                                                card.isMatched ? "bg-primary/20 border-primary" : "border-border"
+                                            )}
+                                            style={{
+                                                backfaceVisibility: "hidden",
+                                                transform: "rotateY(180deg)",
+                                            }}
+                                        >
+                                            <motion.span
+                                                className="text-xl md:text-2xl"
+                                                animate={card.isMatched ? { scale: [1, 1.2, 1] } : {}}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                {card.value}
+                                            </motion.span>
+                                        </div>
+                                    </motion.div>
+                                </button>
+                            </motion.div>
+                        ))
+                    )}
                     </div>
                 </div>
             </UICard>
 
-            {/* Completion Message */}
-            <AnimatePresence>
-                {isComplete && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                    >
-                        <UICard className="p-3 sm:p-4 bg-primary/10 border-primary">
-                            <div className="text-center space-y-1">
-                                <p className="text-lg sm:text-xl font-bold text-primary">
-                                    🎉 Congratulations!
-                                </p>
-                                <p className="text-xs sm:text-sm text-muted-foreground">
-                                    You completed the game in {moves} moves and{" "}
-                                    {formatTime(currentTime)}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    Score: {calculateScore(moves, currentTime)}
-                                </p>
-                            </div>
-                        </UICard>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <UICard className="p-4 space-y-4 lg:sticky lg:top-24">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-md bg-muted/40 p-2">
+                        <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
+                            <Zap className="h-3 w-3" /> Moves
+                        </div>
+                        <p className="text-lg font-bold">{moves}</p>
+                    </div>
+                    <div className="rounded-md bg-muted/40 p-2">
+                        <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
+                            <Clock className="h-3 w-3" /> Time
+                        </div>
+                        <p className="text-lg font-bold">{formatTime(currentTime)}</p>
+                    </div>
+                    <div className="rounded-md bg-muted/40 p-2">
+                        <p className="text-xs text-muted-foreground">Pairs</p>
+                        <p className="text-lg font-bold">{matchedPairs}/8</p>
+                    </div>
+                </div>
 
-            {/* Game Board */}
-            <div className="grid grid-cols-4 gap-1 sm:gap-1.5 w-full max-w-[min(70vw,280px)] sm:max-w-xs md:max-w-sm mx-auto">{!mounted || cards.length === 0 ? (
-                    // Placeholder during SSR and initial load
-                    Array.from({ length: 16 }).map((_, index) => (
-                        <div
-                            key={index}
-                            className="w-full aspect-square rounded-md border-2 bg-card/50 animate-pulse"
-                        />
-                    ))
-                ) : (
-                    cards.map((card, index) => (
+                <AnimatePresence>
+                    {isComplete && (
                         <motion.div
-                            key={card.id}
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            className="rounded-md border border-primary bg-primary/10 p-3 text-center"
                         >
-                            <button
-                                onClick={() => handleCardClick(card.id)}
-                                disabled={card.isFlipped || card.isMatched || isChecking}
-                                className="w-full aspect-square disabled:cursor-not-allowed"
-                            >
-                                <motion.div
-                                    className="relative w-full h-full"
-                                    animate={{ rotateY: card.isFlipped || card.isMatched ? 180 : 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    style={{ transformStyle: "preserve-3d" }}
-                                >
-                                    {/* Card Back */}
-                                    <div
-                                        className={cn(
-                                            "absolute inset-0 rounded-md border-2 flex items-center justify-center",
-                                            "bg-gradient-to-br from-primary to-primary/60",
-                                            card.isMatched && "opacity-0"
-                                        )}
-                                        style={{
-                                            backfaceVisibility: "hidden",
-                                        }}
-                                    >
-                                        <span className="text-lg sm:text-xl md:text-2xl">🃏</span>
-                                    </div>
-
-                                    {/* Card Front */}
-                                    <div
-                                        className={cn(
-                                            "absolute inset-0 rounded-md border-2 flex items-center justify-center",
-                                            "bg-card",
-                                            card.isMatched
-                                                ? "bg-primary/20 border-primary"
-                                                : "border-border"
-                                        )}
-                                        style={{
-                                            backfaceVisibility: "hidden",
-                                            transform: "rotateY(180deg)",
-                                        }}
-                                    >
-                                        <motion.span
-                                            className="text-lg sm:text-xl md:text-2xl"
-                                            animate={card.isMatched ? { scale: [1, 1.2, 1] } : {}}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            {card.value}
-                                        </motion.span>
-                                    </div>
-                                </motion.div>
-                            </button>
+                            <p className="text-sm font-bold text-primary">Completed! 🎉</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                {moves} moves • {formatTime(currentTime)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                Score: {calculateScore(moves, currentTime)}
+                            </p>
                         </motion.div>
-                    ))
-                )}
-            </div>
+                    )}
+                </AnimatePresence>
 
-            {/* Reset Button */}
-            <div className="flex justify-center">
-                <Button onClick={resetGame} variant="outline" className="gap-2">
+                <Button onClick={resetGame} variant="outline" className="w-full gap-2">
                     <RotateCcw className="h-4 w-4" />
                     New Game
                 </Button>
-            </div>
+            </UICard>
         </div>
     )
 }

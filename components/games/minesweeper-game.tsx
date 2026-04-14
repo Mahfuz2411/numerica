@@ -154,167 +154,129 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
 
   if (!mounted || board.length === 0) {
     return (
-      <div className="space-y-1.5 sm:space-y-2 max-w-2xl mx-auto">
-        <Card className="p-2">
-          <div className="h-12 bg-card/50 animate-pulse rounded" />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <Card className="p-4">
+          <div className="w-full aspect-square max-w-[min(62vh,24rem)] mx-auto bg-card/50 animate-pulse rounded" />
         </Card>
-        <div className="w-full aspect-square max-w-xs mx-auto bg-card/50 animate-pulse rounded" />
+        <Card className="p-4">
+          <div className="h-52 bg-card/50 animate-pulse rounded" />
+        </Card>
       </div>
     )
   }
 
   return (
-    <div className="space-y-1.5 sm:space-y-2 max-w-2xl mx-auto">
-      {/* Difficulty & Stats */}
-      <Card className="p-2">
-        <div className="space-y-2">
-          {/* Difficulty Selection */}
-          <div className="flex gap-1.5 justify-center">
-            <Button
-              variant={difficulty === "easy" ? "default" : "outline"}
-              onClick={() => setDifficulty("easy")}
-              size="sm"
-              className="text-xs"
-            >
-              Easy
-            </Button>
-            <Button
-              variant={difficulty === "medium" ? "default" : "outline"}
-              onClick={() => setDifficulty("medium")}
-              size="sm"
-              className="text-xs"
-            >
-              Medium
-            </Button>
-            <Button
-              variant={difficulty === "hard" ? "default" : "outline"}
-              onClick={() => setDifficulty("hard")}
-              size="sm"
-              className="text-xs"
-            >
-              Hard
-            </Button>
-          </div>
-
-          {/* Stats */}
-          <div className="flex justify-around items-center">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                <Bomb className="h-3 w-3" />
-                <span className="text-xs">Mines</span>
-              </div>
-              <p className="text-sm font-bold">{remainingMines}</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                <span className="text-xs">Time</span>
-              </div>
-              <p className="text-sm font-bold">{formatTime(currentTime)}</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                <Flag className="h-3 w-3" />
-                <span className="text-xs">Flags</span>
-              </div>
-              <p className="text-sm font-bold">{flags}</p>
-            </div>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+      <Card className="p-4">
+        <div className="mx-auto overflow-hidden" style={{ maxWidth: "min(62vh, 24rem)" }}>
+          <div
+            className={cn(
+              "grid rounded border border-border",
+              difficulty === "easy" ? "gap-0.5 p-0.5" : "gap-0 p-0.5"
+            )}
+            style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)` }}
+          >
+            {board.map((row, rowIndex) =>
+              row.map((cell, colIndex) => (
+                <motion.button
+                  key={`${rowIndex}-${colIndex}`}
+                  onClick={() => handleCellClick(rowIndex, colIndex)}
+                  onContextMenu={(e) => handleCellRightClick(e, rowIndex, colIndex)}
+                  disabled={gameState !== "playing"}
+                  whileHover={{ scale: difficulty === "easy" ? (cell.state === "hidden" ? 1.05 : 1) : 1 }}
+                  whileTap={{ scale: difficulty === "easy" ? 0.95 : 1 }}
+                  className={cn(
+                    "aspect-square flex items-center justify-center font-bold transition-colors select-none",
+                    difficulty === "easy" ? "text-[10px] sm:text-xs" : difficulty === "medium" ? "text-[9px] sm:text-[10px]" : "text-[8px] sm:text-[9px]",
+                    cell.state === "hidden"
+                      ? "bg-card hover:bg-accent border border-border"
+                      : cell.state === "flagged"
+                      ? "bg-yellow-500/20 border border-yellow-500"
+                      : cell.value === "mine"
+                      ? "bg-red-500/20 border border-red-500"
+                      : "bg-accent/50 border border-border/50",
+                    "disabled:cursor-not-allowed"
+                  )}
+                >
+                  {cell.state === "revealed" && (
+                    <span
+                      className={cn(
+                        cell.value === "mine"
+                          ? "text-red-600"
+                          : typeof cell.value === "number" && cell.value > 0
+                          ? getCellColor(cell.value)
+                          : ""
+                      )}
+                    >
+                      {cell.value === "mine" ? "💣" : cell.value > 0 ? cell.value : ""}
+                    </span>
+                  )}
+                  {cell.state === "flagged" && <span>🚩</span>}
+                </motion.button>
+              ))
+            )}
           </div>
         </div>
       </Card>
 
-      {/* Game Status */}
-      {gameState !== "playing" && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <Card className="p-3 bg-primary/10 border-primary">
-            <div className="text-center space-y-1">
-              <p className="text-lg font-bold text-primary">
-                {gameState === "won" ? "🎉 You Won!" : "💥 Game Over!"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Time: {formatTime(currentTime)}
-              </p>
-            </div>
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Game Board */}
-      <div
-        className="mx-auto overflow-hidden"
-        style={{
-          maxWidth: difficulty === "easy" ? "220px" : difficulty === "medium" ? "280px" : "360px",
-        }}
-      >
-        <div
-          className={cn(
-            "grid rounded border border-border",
-            difficulty === "easy" 
-              ? "gap-0.5 p-0.5" 
-              : "gap-0 p-0.5"
-          )}
-          style={{
-            gridTemplateColumns: `repeat(${config.cols}, 1fr)`,
-          }}
-        >
-          {board.map((row, rowIndex) =>
-            row.map((cell, colIndex) => (
-              <motion.button
-                key={`${rowIndex}-${colIndex}`}
-                onClick={() => handleCellClick(rowIndex, colIndex)}
-                onContextMenu={(e) => handleCellRightClick(e, rowIndex, colIndex)}
-                disabled={gameState !== "playing"}
-                whileHover={{ scale: difficulty === "easy" ? (cell.state === "hidden" ? 1.05 : 1) : 1 }}
-                whileTap={{ scale: difficulty === "easy" ? 0.95 : 1 }}
-                className={cn(
-                  "aspect-square flex items-center justify-center font-bold transition-colors select-none",
-                  difficulty === "easy" ? "text-[10px] sm:text-xs" : difficulty === "medium" ? "text-[9px] sm:text-[10px]" : "text-[8px] sm:text-[9px]",
-                  cell.state === "hidden"
-                    ? "bg-card hover:bg-accent border border-border"
-                    : cell.state === "flagged"
-                    ? "bg-yellow-500/20 border border-yellow-500"
-                    : cell.value === "mine"
-                    ? "bg-red-500/20 border border-red-500"
-                    : "bg-accent/50 border border-border/50",
-                  "disabled:cursor-not-allowed"
-                )}
-              >
-                {cell.state === "revealed" && (
-                  <span
-                    className={cn(
-                      cell.value === "mine"
-                        ? "text-red-600"
-                        : typeof cell.value === "number" && cell.value > 0
-                        ? getCellColor(cell.value)
-                        : ""
-                    )}
-                  >
-                    {cell.value === "mine" ? "💣" : cell.value > 0 ? cell.value : ""}
-                  </span>
-                )}
-                {cell.state === "flagged" && <span>🚩</span>}
-              </motion.button>
-            ))
-          )}
+      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
+        <div className="grid grid-cols-3 gap-2">
+          <Button
+            variant={difficulty === "easy" ? "default" : "outline"}
+            onClick={() => setDifficulty("easy")}
+            size="sm"
+            className="text-xs"
+          >
+            Easy
+          </Button>
+          <Button
+            variant={difficulty === "medium" ? "default" : "outline"}
+            onClick={() => setDifficulty("medium")}
+            size="sm"
+            className="text-xs"
+          >
+            Medium
+          </Button>
+          <Button
+            variant={difficulty === "hard" ? "default" : "outline"}
+            onClick={() => setDifficulty("hard")}
+            size="sm"
+            className="text-xs"
+          >
+            Hard
+          </Button>
         </div>
-      </div>
 
-      {/* Reset Button */}
-      <div className="flex justify-center">
-        <Button onClick={resetGame} variant="outline" size="sm" className="gap-2">
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-md bg-muted/40 p-2">
+            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Bomb className="h-3 w-3" />Mines</div>
+            <p className="text-lg font-bold">{remainingMines}</p>
+          </div>
+          <div className="rounded-md bg-muted/40 p-2">
+            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Clock className="h-3 w-3" />Time</div>
+            <p className="text-lg font-bold">{formatTime(currentTime)}</p>
+          </div>
+          <div className="rounded-md bg-muted/40 p-2">
+            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Flag className="h-3 w-3" />Flags</div>
+            <p className="text-lg font-bold">{flags}</p>
+          </div>
+        </div>
+
+        {gameState !== "playing" && (
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
+            <div className="rounded-md border border-primary bg-primary/10 p-3 text-center">
+              <p className="text-sm font-bold text-primary">{gameState === "won" ? "🎉 You Won!" : "💥 Game Over!"}</p>
+              <p className="text-xs text-muted-foreground">Time: {formatTime(currentTime)}</p>
+            </div>
+          </motion.div>
+        )}
+
+        <Button onClick={resetGame} variant="outline" size="sm" className="w-full gap-2">
           <RotateCcw className="h-3 w-3" />
           New Game
         </Button>
-      </div>
 
-      {/* Instructions */}
-      <Card className="p-2">
-        <p className="text-xs text-center text-muted-foreground">
-          Left click to reveal | Right click to flag
-        </p>
+        <p className="text-xs text-center text-muted-foreground">Left click to reveal | Right click to flag</p>
       </Card>
     </div>
   )

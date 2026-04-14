@@ -54,9 +54,36 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   const [highScore, setHighScore] = useState(0)
   
   const gameTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const spawnTimerRef = useRef<NodeJS.Timeout | null>(null)
   const moleTimersRef = useRef<Map<number, NodeJS.Timeout>>(new Map())
+  const activeMolesRef = useRef<Set<number>>(new Set())
+  const gameStateRef = useRef<"idle" | "playing" | "finished">("idle")
+  const spawnMoleRef = useRef<() => void>(() => {})
 
   const config = DIFFICULTIES[difficulty]
+
+  useEffect(() => {
+    activeMolesRef.current = activeMoles
+  }, [activeMoles])
+
+  useEffect(() => {
+    gameStateRef.current = gameState
+  }, [gameState])
+
+  const clearAllTimers = useCallback(() => {
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current)
+      gameTimerRef.current = null
+    }
+
+    if (spawnTimerRef.current) {
+      clearTimeout(spawnTimerRef.current)
+      spawnTimerRef.current = null
+    }
+
+    moleTimersRef.current.forEach((timer) => clearTimeout(timer))
+    moleTimersRef.current.clear()
+  }, [])
 
   // Load high score from localStorage
   useEffect(() => {
@@ -75,10 +102,10 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   }, [gameState, score, highScore, difficulty])
 
   const spawnMole = useCallback(() => {
-    if (gameState !== "playing") return
+    if (gameStateRef.current !== "playing") return
 
     const availableHoles = Array.from({ length: 9 }, (_, i) => i).filter(
-      (i) => !activeMoles.has(i)
+      (i) => !activeMolesRef.current.has(i)
     )
 
     if (availableHoles.length === 0) return
@@ -99,32 +126,35 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
     moleTimersRef.current.set(randomHole, timer)
 
     // Schedule next mole spawn
-    const nextSpawnDelay = 
-      config.minInterval + Math.random() * (config.maxInterval - config.minInterval)
+    const nextSpawnDelay =
+      config.moleHideTime + config.minInterval + Math.random() * (config.maxInterval - config.minInterval)
     
-    setTimeout(() => {
-      if (gameState === "playing") {
-        spawnMole()
+    spawnTimerRef.current = setTimeout(() => {
+      if (gameStateRef.current === "playing") {
+        spawnMoleRef.current()
       }
     }, nextSpawnDelay)
-  }, [gameState, activeMoles, config])
+  }, [config, clearAllTimers])
+
+  useEffect(() => {
+    spawnMoleRef.current = spawnMole
+  }, [spawnMole])
 
   const startGame = useCallback(() => {
+    clearAllTimers()
+    gameStateRef.current = "playing"
+    activeMolesRef.current = new Set()
     setGameState("playing")
     setScore(0)
     setTimeLeft(config.duration)
     setActiveMoles(new Set())
     setWhackedMole(null)
 
-    // Clear any existing timers
-    if (gameTimerRef.current) clearInterval(gameTimerRef.current)
-    moleTimersRef.current.forEach((timer) => clearTimeout(timer))
-    moleTimersRef.current.clear()
-
     // Start game timer
     gameTimerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
+          clearAllTimers()
           setGameState("finished")
           return 0
         }
@@ -160,25 +190,22 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   }
 
   const resetGame = useCallback(() => {
+    clearAllTimers()
+    gameStateRef.current = "idle"
+    activeMolesRef.current = new Set()
     setGameState("idle")
     setScore(0)
     setTimeLeft(config.duration)
     setActiveMoles(new Set())
     setWhackedMole(null)
-
-    if (gameTimerRef.current) clearInterval(gameTimerRef.current)
-    moleTimersRef.current.forEach((timer) => clearTimeout(timer))
-    moleTimersRef.current.clear()
   }, [config])
 
   // Cleanup on unmount
   useEffect(() => {
-    const moleTimers = moleTimersRef.current
     return () => {
-      if (gameTimerRef.current) clearInterval(gameTimerRef.current)
-      moleTimers.forEach((timer) => clearTimeout(timer))
+      clearAllTimers()
     }
-  }, [])
+  }, [clearAllTimers])
 
   // Reset when difficulty changes
   useEffect(() => {
@@ -186,154 +213,123 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   }, [difficulty, resetGame])
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Hammer className="h-6 w-6" />
-              Whack-a-Mole
-            </span>
-            <select
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-              className="px-4 py-2 rounded-lg border bg-background text-sm"
-              disabled={gameState === "playing"}
-            >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Stats */}
-          <div className="flex gap-4 justify-center flex-wrap">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10">
-              <Trophy className="h-5 w-5 text-primary" />
-              <div className="text-center">
-                <div className="text-2xl font-bold">{score}</div>
-                <div className="text-xs text-muted-foreground">Score</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10">
-              <Timer className="h-5 w-5 text-blue-500" />
-              <div className="text-center">
-                <div className="text-2xl font-bold">{timeLeft}s</div>
-                <div className="text-xs text-muted-foreground">Time Left</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-500/10">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              <div className="text-center">
-                <div className="text-2xl font-bold">{highScore}</div>
-                <div className="text-xs text-muted-foreground">Best</div>
-              </div>
-            </div>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+      <Card className="p-4">
+        <div className="relative mx-auto w-full max-w-[min(62vh,30rem)] aspect-square">
+          <div className="grid grid-cols-3 gap-3">
+            {Array.from({ length: 9 }, (_, i) => (
+              <motion.button
+                key={i}
+                onClick={() => whackMole(i)}
+                className="relative aspect-square rounded-2xl bg-gradient-to-b from-amber-900 to-amber-950 border-4 border-amber-800 overflow-hidden cursor-pointer disabled:cursor-not-allowed"
+                disabled={gameState !== "playing"}
+                whileHover={gameState === "playing" ? { scale: 1.05 } : {}}
+                whileTap={gameState === "playing" ? { scale: 0.95 } : {}}
+              >
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-3/4 h-2/3 bg-black/60 rounded-full" />
+                </div>
+
+                <AnimatePresence>
+                  {activeMoles.has(i) && (
+                    <motion.div
+                      initial={{ y: "100%" }}
+                      animate={{ y: whackedMole === i ? "100%" : "10%" }}
+                      exit={{ y: "100%" }}
+                      transition={{ type: "spring", damping: 15, stiffness: 300 }}
+                      className="absolute inset-0 flex items-end justify-center pb-2"
+                    >
+                      <div className="text-5xl md:text-6xl">🦫</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {whackedMole === i && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 1 }}
+                      animate={{ scale: 2, opacity: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 flex items-center justify-center"
+                    >
+                      <div className="text-4xl">💥</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            ))}
           </div>
 
-          {/* Game Board */}
-          <div className="relative">
-            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-              {Array.from({ length: 9 }, (_, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => whackMole(i)}
-                  className="relative aspect-square rounded-2xl bg-gradient-to-b from-amber-900 to-amber-950 border-4 border-amber-800 overflow-hidden cursor-pointer disabled:cursor-not-allowed"
-                  disabled={gameState !== "playing"}
-                  whileHover={gameState === "playing" ? { scale: 1.05 } : {}}
-                  whileTap={gameState === "playing" ? { scale: 0.95 } : {}}
-                >
-                  {/* Hole */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-3/4 h-2/3 bg-black/60 rounded-full" />
-                  </div>
-
-                  {/* Mole */}
-                  <AnimatePresence>
-                    {activeMoles.has(i) && (
-                      <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: whackedMole === i ? "100%" : "10%" }}
-                        exit={{ y: "100%" }}
-                        transition={{ 
-                          type: "spring", 
-                          damping: 15,
-                          stiffness: 300
-                        }}
-                        className="absolute inset-0 flex items-end justify-center pb-2"
-                      >
-                        <div className="text-6xl">🦫</div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Whack effect */}
-                  <AnimatePresence>
-                    {whackedMole === i && (
-                      <motion.div
-                        initial={{ scale: 0, opacity: 1 }}
-                        animate={{ scale: 2, opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <div className="text-4xl">💥</div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
-              ))}
-            </div>
-
-            {/* Game Over Overlay */}
-            <AnimatePresence>
-              {gameState === "finished" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-2xl"
-                >
-                  <Card className="text-center p-6">
-                    <CardTitle className="text-2xl mb-4">Game Over!</CardTitle>
-                    <div className="space-y-2">
-                      <p className="text-4xl font-bold text-primary">{score}</p>
-                      <p className="text-muted-foreground">Moles Whacked</p>
-                      {score > highScore && (
-                        <p className="text-yellow-500 font-semibold">🎉 New High Score!</p>
-                      )}
-                    </div>
-                  </Card>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Controls */}
-          <div className="flex gap-4 justify-center">
-            {gameState === "idle" && (
-              <Button onClick={startGame} size="lg" className="gap-2">
-                <Hammer className="h-5 w-5" />
-                Start Game
-              </Button>
-            )}
+          <AnimatePresence>
             {gameState === "finished" && (
-              <Button onClick={resetGame} size="lg" className="gap-2">
-                <RotateCcw className="h-5 w-5" />
-                Play Again
-              </Button>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-2xl"
+              >
+                <Card className="text-center p-6">
+                  <CardTitle className="text-2xl mb-4">Game Over!</CardTitle>
+                  <div className="space-y-2">
+                    <p className="text-4xl font-bold text-primary">{score}</p>
+                    <p className="text-muted-foreground">Moles Whacked</p>
+                    {score > highScore && <p className="text-yellow-500 font-semibold">🎉 New High Score!</p>}
+                  </div>
+                </Card>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
+        </div>
+      </Card>
 
-          {/* Instructions */}
-          {gameState === "idle" && (
-            <div className="text-center text-sm text-muted-foreground space-y-1">
-              <p>Click on moles as they pop up to whack them!</p>
-              <p>The faster you click, the higher your score!</p>
-            </div>
-          )}
-        </CardContent>
+      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold flex items-center gap-2"><Hammer className="h-4 w-4" />Whack-a-Mole</h3>
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value as Difficulty)}
+            className="px-3 py-1.5 rounded-lg border bg-background text-sm"
+            disabled={gameState === "playing"}
+          >
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-lg bg-primary/10 p-2">
+            <div className="text-xs text-muted-foreground">Score</div>
+            <div className="text-xl font-bold">{score}</div>
+          </div>
+          <div className="rounded-lg bg-blue-500/10 p-2">
+            <div className="text-xs text-muted-foreground">Time</div>
+            <div className="text-xl font-bold">{timeLeft}s</div>
+          </div>
+          <div className="rounded-lg bg-yellow-500/10 p-2">
+            <div className="text-xs text-muted-foreground">Best</div>
+            <div className="text-xl font-bold">{highScore}</div>
+          </div>
+        </div>
+
+        {gameState === "idle" && (
+          <Button onClick={startGame} size="lg" className="w-full gap-2">
+            <Hammer className="h-5 w-5" />
+            Start Game
+          </Button>
+        )}
+        {gameState === "finished" && (
+          <Button onClick={resetGame} size="lg" className="w-full gap-2">
+            <RotateCcw className="h-5 w-5" />
+            Play Again
+          </Button>
+        )}
+
+        <div className="text-center text-xs text-muted-foreground space-y-1">
+          <p>Click moles fast to score.</p>
+          <p>Board stays in viewport for better UX.</p>
+        </div>
       </Card>
     </div>
   )

@@ -29,7 +29,7 @@ const games = [
     icon: "🎯",
     difficulty: "Easy",
     players: "1-2 Players",
-    disabled: false, // Set to true to disable this game
+    disabled: false, 
   },
   {
     id: "memory-card",
@@ -38,7 +38,7 @@ const games = [
     icon: "🃏",
     difficulty: "Medium",
     players: "1 Player",
-    disabled: false, // Set to true to disable this game
+    disabled: false, 
   },
   {
     id: "minesweeper",
@@ -47,7 +47,7 @@ const games = [
     icon: "💣",
     difficulty: "Medium",
     players: "1 Player",
-    disabled: false, // Set to true to disable this game
+    disabled: false,
   },
   {
     id: "whack-a-mole",
@@ -56,7 +56,7 @@ const games = [
     icon: "🦫",
     difficulty: "Easy to Hard",
     players: "1 Player",
-    disabled: true, // Set to true to disable this game
+    disabled: false,
   },
   {
     id: "sudoku",
@@ -65,7 +65,7 @@ const games = [
     icon: "🔢",
     difficulty: "Easy to Expert",
     players: "1 Player",
-    disabled: false, // Set to true to disable this game
+    disabled: false,
   },
   {
     id: "2048",
@@ -74,7 +74,7 @@ const games = [
     icon: "🎲",
     difficulty: "Medium",
     players: "1 Player",
-    disabled: false, // Set to true to disable this game
+    disabled: false,
   },
 ]
 

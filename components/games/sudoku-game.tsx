@@ -182,51 +182,9 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between flex-wrap gap-4">
-            <span>Sudoku</span>
-            <select
-              value={difficulty}
-              onChange={(e) => {
-                setDifficulty(e.target.value as Difficulty)
-              }}
-              className="px-4 py-2 rounded-lg border bg-background text-sm"
-              disabled={gameState === "playing" || gameState === "paused"}
-            >
-              {Object.entries(DIFFICULTIES).map(([key, { name }]) => (
-                <option key={key} value={key}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Stats */}
-          <div className="flex gap-2 sm:gap-4 justify-center flex-wrap text-sm">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10">
-              <Timer className="h-4 w-4 text-blue-500" />
-              <span className="font-mono font-bold">{formatTime(elapsedTime)}</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10">
-              <Lightbulb className="h-4 w-4 text-yellow-500" />
-              <span className="font-bold">{hintsUsed}</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10">
-              <span className="text-red-500 font-bold">✗</span>
-              <span className="font-bold">{mistakes}</span>
-            </div>
-            {highScore && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10">
-                <Trophy className="h-4 w-4 text-primary" />
-                <span className="font-mono text-xs">{formatTime(highScore)}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Sudoku Board */}
-          <div className="relative max-w-lg mx-auto">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+        <Card className="p-4">
+          <div className="relative mx-auto w-[min(62vh,36rem)] max-w-full">
             {(gameState === "paused" || gameState === "idle") && (
               <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
                 <div className="text-center space-y-4">
@@ -292,16 +250,54 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
               )}
             </div>
           </div>
+        </Card>
 
-          {/* Number Pad */}
-          <div className="grid grid-cols-5 gap-2 max-w-lg mx-auto">
+        <Card className="p-4 space-y-4 lg:sticky lg:top-24">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-semibold">Sudoku</h3>
+            <select
+              value={difficulty}
+              onChange={(e) => {
+                setDifficulty(e.target.value as Difficulty)
+              }}
+              className="px-3 py-1.5 rounded-lg border bg-background text-sm"
+              disabled={gameState === "playing" || gameState === "paused"}
+            >
+              {Object.entries(DIFFICULTIES).map(([key, { name }]) => (
+                <option key={key} value={key}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="rounded-lg bg-blue-500/10 p-2 text-center">
+              <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Timer className="h-3 w-3 text-blue-500" />Time</div>
+              <div className="font-mono font-bold">{formatTime(elapsedTime)}</div>
+            </div>
+            <div className="rounded-lg bg-yellow-500/10 p-2 text-center">
+              <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Lightbulb className="h-3 w-3 text-yellow-500" />Hints</div>
+              <div className="font-bold">{hintsUsed}</div>
+            </div>
+            <div className="rounded-lg bg-red-500/10 p-2 text-center">
+              <div className="text-xs text-muted-foreground">Mistakes</div>
+              <div className="font-bold">{mistakes}</div>
+            </div>
+            <div className="rounded-lg bg-primary/10 p-2 text-center">
+              <div className="text-xs text-muted-foreground">Best</div>
+              <div className="font-mono font-bold">{highScore ? formatTime(highScore) : "--:--"}</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-5 gap-1.5">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <Button
                 key={num}
                 onClick={() => handleNumberInput(num)}
                 variant="outline"
-                size="lg"
-                className="text-lg font-semibold aspect-square p-0"
+                size="sm"
+                className="aspect-square p-0"
                 disabled={gameState !== "playing"}
               >
                 {num}
@@ -310,44 +306,36 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
             <Button
               onClick={() => setNotesMode(!notesMode)}
               variant={notesMode ? "default" : "outline"}
-              size="lg"
+              size="sm"
               className="aspect-square p-0"
               disabled={gameState !== "playing"}
             >
-              <Pencil className="h-5 w-5" />
+              <Pencil className="h-4 w-4" />
             </Button>
           </div>
 
-          {/* Controls */}
-          <div className="flex gap-2 justify-center flex-wrap">
+          <div className="grid grid-cols-2 gap-2">
             <Button onClick={clearCell} variant="outline" disabled={gameState !== "playing"}>
-              <Eraser className="h-4 w-4 mr-2" />
+              <Eraser className="h-4 w-4 mr-1" />
               Clear
             </Button>
             <Button onClick={useHint} variant="outline" disabled={gameState !== "playing"}>
-              <Lightbulb className="h-4 w-4 mr-2" />
+              <Lightbulb className="h-4 w-4 mr-1" />
               Hint
             </Button>
             <Button onClick={togglePause} variant="outline" disabled={gameState === "idle" || gameState === "won"}>
-              {gameState === "paused" ? (
-                <>
-                  <Play className="h-4 w-4 mr-2" />
-                  Resume
-                </>
-              ) : (
-                <>
-                  <Pause className="h-4 w-4 mr-2" />
-                  Pause
-                </>
-              )}
+              {gameState === "paused" ? <Play className="h-4 w-4 mr-1" /> : <Pause className="h-4 w-4 mr-1" />} 
+              {gameState === "paused" ? "Resume" : "Pause"}
             </Button>
             <Button onClick={startNewGame} variant="outline">
-              <RotateCcw className="h-4 w-4 mr-2" />
-              New Game
+              <RotateCcw className="h-4 w-4 mr-1" />
+              New
             </Button>
           </div>
+        </Card>
+      </div>
 
-          {/* Win Modal */}
+      {/* Win Modal */}
           <AnimatePresence>
             {gameState === "won" && (
               <motion.div
@@ -383,8 +371,6 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
               </motion.div>
             )}
           </AnimatePresence>
-        </CardContent>
-      </Card>
     </div>
   )
 }

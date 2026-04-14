@@ -138,115 +138,101 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
   }
 
   return (
-    <div className="space-y-1.5 sm:space-y-2 md:space-y-3 max-w-2xl mx-auto">
-      {/* Mode Selection */}
-      <div className="flex gap-2 justify-center">
-        <Button
-          variant={mode === "pvp" ? "default" : "outline"}
-          onClick={() => changeMode("pvp")}
-          className="gap-1.5 text-xs sm:text-sm"
-          size="sm"
-        >
-          <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-          2 Players
-        </Button>
-        <Button
-          variant={mode === "ai" ? "default" : "outline"}
-          onClick={() => changeMode("ai")}
-          className="gap-1.5 text-xs sm:text-sm"
-          size="sm"
-        >
-          <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
-          vs AI
-        </Button>
-      </div>
-
-      {/* Game Status */}
-      <Card className="p-2">
-        <div className="text-center space-y-1.5">
-          {winner ? (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              <p className="text-sm sm:text-base md:text-lg font-bold text-primary">
-                Player {winner} Wins! 🎉
-              </p>
-            </motion.div>
-          ) : isDraw ? (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              <p className="text-sm sm:text-base md:text-lg font-bold text-muted-foreground">
-                It&apos;s a Draw! 🤝
-              </p>
-            </motion.div>
-          ) : (
-            <p className="text-xs sm:text-sm md:text-base font-semibold">
-              {isAIThinking ? (
-                <span className="text-muted-foreground">AI is thinking...</span>
-              ) : (
-                <>
-                  Current Player:{" "}
-                  <span className="text-primary">{currentPlayer}</span>
-                </>
-              )}
-            </p>
-          )}
-          
-          <div className="flex justify-center gap-4 text-xs sm:text-sm text-muted-foreground">
-            <span>X: {scores.X}</span>
-            <span>O: {scores.O}</span>
-            <span>Draws: {scores.draws}</span>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+      <Card className="p-4">
+        <div className="mx-auto w-[min(62vh,28rem)] max-w-full">
+          <div className="grid grid-cols-3 gap-2 aspect-square">
+            {board.map((cell, index) => {
+              const isWinningCell = winningLine?.includes(index)
+              return (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: cell ? 1 : 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleCellClick(index)}
+                  disabled={!!cell || !!winner || isDraw || isAIThinking}
+                  className={cn(
+                    "aspect-square rounded-md border-2 text-2xl md:text-3xl font-bold transition-all",
+                    "disabled:cursor-not-allowed",
+                    cell
+                      ? "bg-card border-primary/20"
+                      : "bg-card hover:bg-accent hover:border-primary/50",
+                    isWinningCell && "bg-primary/20 border-primary"
+                  )}
+                >
+                  {cell && (
+                    <motion.span
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                      className={cell === "X" ? "text-primary" : "text-secondary-foreground"}
+                    >
+                      {cell}
+                    </motion.span>
+                  )}
+                </motion.button>
+              )
+            })}
           </div>
         </div>
       </Card>
 
-      {/* Game Board */}
-      <div className="grid grid-cols-3 gap-1 sm:gap-1.5 w-full max-w-[min(70vw,240px)] sm:max-w-[260px] md:max-w-xs mx-auto aspect-square">
-        {board.map((cell, index) => {
-          const isWinningCell = winningLine?.includes(index)
-          return (
-            <motion.button
-              key={index}
-              whileHover={{ scale: cell ? 1 : 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleCellClick(index)}
-              disabled={!!cell || !!winner || isDraw || isAIThinking}
-              className={cn(
-                "aspect-square rounded-md border-2 text-xl sm:text-2xl md:text-3xl font-bold transition-all",
-                "disabled:cursor-not-allowed",
-                cell
-                  ? "bg-card border-primary/20"
-                  : "bg-card hover:bg-accent hover:border-primary/50",
-                isWinningCell && "bg-primary/20 border-primary"
-              )}
-            >
-              {cell && (
-                <motion.span
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: "spring", stiffness: 200 }}
-                  className={cell === "X" ? "text-primary" : "text-secondary-foreground"}
-                >
-                  {cell}
-                </motion.span>
-              )}
-            </motion.button>
-          )
-        })}
-      </div>
+      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant={mode === "pvp" ? "default" : "outline"}
+            onClick={() => changeMode("pvp")}
+            className="gap-1.5 text-xs"
+            size="sm"
+          >
+            <Users className="h-3.5 w-3.5" />
+            2P
+          </Button>
+          <Button
+            variant={mode === "ai" ? "default" : "outline"}
+            onClick={() => changeMode("ai")}
+            className="gap-1.5 text-xs"
+            size="sm"
+          >
+            <Bot className="h-3.5 w-3.5" />
+            AI
+          </Button>
+        </div>
 
-      {/* Reset Button */}
-      <div className="flex justify-center">
-        <Button onClick={resetGame} variant="outline" className="gap-2">
+        <div className="rounded-lg border p-3 text-center">
+          {winner ? (
+            <p className="text-sm font-bold text-primary">Player {winner} Wins! 🎉</p>
+          ) : isDraw ? (
+            <p className="text-sm font-bold text-muted-foreground">It&apos;s a Draw! 🤝</p>
+          ) : isAIThinking ? (
+            <p className="text-sm text-muted-foreground">AI is thinking...</p>
+          ) : (
+            <p className="text-sm font-semibold">
+              Current: <span className="text-primary">{currentPlayer}</span>
+            </p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+          <div className="rounded-md bg-muted/40 p-2">
+            <div className="text-xs text-muted-foreground">X</div>
+            <div className="font-bold">{scores.X}</div>
+          </div>
+          <div className="rounded-md bg-muted/40 p-2">
+            <div className="text-xs text-muted-foreground">O</div>
+            <div className="font-bold">{scores.O}</div>
+          </div>
+          <div className="rounded-md bg-muted/40 p-2">
+            <div className="text-xs text-muted-foreground">Draw</div>
+            <div className="font-bold">{scores.draws}</div>
+          </div>
+        </div>
+
+        <Button onClick={resetGame} variant="outline" className="w-full gap-2">
           <RotateCcw className="h-4 w-4" />
           New Game
         </Button>
-      </div>
+      </Card>
     </div>
   )
 }
