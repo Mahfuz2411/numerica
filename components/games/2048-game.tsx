@@ -132,7 +132,7 @@ export function Game2048({ gameId }: Game2048Props) {
       <Card className="overflow-hidden shadow-lg p-4">
         <div
           ref={gameContainerRef}
-          className="relative mx-auto w-[min(62vh,30rem)] max-w-full bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 rounded-lg aspect-square cursor-grab active:cursor-grabbing"
+          className="relative mx-auto w-[min(62vh,30rem)] max-w-full bg-linear-to-b from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 rounded-lg aspect-square cursor-grab active:cursor-grabbing"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -157,13 +157,13 @@ export function Game2048({ gameId }: Game2048Props) {
       <Card className="p-4 space-y-4 lg:sticky lg:top-24">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">2048</h2>
+            <h2 className="text-xl font-bold bg-linear-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">2048</h2>
             <p className="text-xs text-muted-foreground">Merge tiles to reach 2048</p>
           </div>
           <Button
             onClick={handleNewGame}
             size="sm"
-            className="gap-2 bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
+            className="gap-2 bg-linear-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
           >
             <RotateCcw className="h-4 w-4" />
             New
@@ -214,7 +214,7 @@ export function Game2048({ gameId }: Game2048Props) {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-gradient-to-b from-background to-muted rounded-xl p-6 max-w-sm w-full shadow-2xl border border-primary/20"
+              className="bg-linear-to-b from-background to-muted rounded-xl p-6 max-w-sm w-full shadow-2xl border border-primary/20"
               onClick={e => e.stopPropagation()}
             >
               <div className="text-center space-y-4">
@@ -229,9 +229,9 @@ export function Game2048({ gameId }: Game2048Props) {
                   <h2 className="text-2xl sm:text-3xl font-bold mb-2">You Win!</h2>
                   <p className="text-sm text-muted-foreground">You reached 2048! 🎊</p>
                 </div>
-                <div className="bg-gradient-to-r from-orange-500/10 to-purple-600/10 rounded-lg p-3 border border-primary/20">
+                <div className="bg-linear-to-r from-orange-500/10 to-purple-600/10 rounded-lg p-3 border border-primary/20">
                   <p className="text-xs text-muted-foreground mb-1">Final Score</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
+                  <p className="text-3xl font-bold bg-linear-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
                     {gameState.score}
                   </p>
                 </div>
@@ -245,7 +245,7 @@ export function Game2048({ gameId }: Game2048Props) {
                   </Button>
                   <Button
                     onClick={handleNewGame}
-                    className="flex-1 bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
+                    className="flex-1 bg-linear-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
                   >
                     New Game
                   </Button>
@@ -270,7 +270,7 @@ export function Game2048({ gameId }: Game2048Props) {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-gradient-to-b from-background to-muted rounded-xl p-6 max-w-sm w-full shadow-2xl border border-destructive/20"
+              className="bg-linear-to-b from-background to-muted rounded-xl p-6 max-w-sm w-full shadow-2xl border border-destructive/20"
               onClick={e => e.stopPropagation()}
             >
               <div className="text-center space-y-4">
@@ -285,9 +285,9 @@ export function Game2048({ gameId }: Game2048Props) {
                   <h2 className="text-2xl sm:text-3xl font-bold mb-2">Game Over!</h2>
                   <p className="text-sm text-muted-foreground">No more moves available.</p>
                 </div>
-                <div className="bg-gradient-to-r from-red-500/10 to-orange-600/10 rounded-lg p-3 border border-destructive/20">
+                <div className="bg-linear-to-r from-red-500/10 to-orange-600/10 rounded-lg p-3 border border-destructive/20">
                   <p className="text-xs text-muted-foreground mb-1">Final Score</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                  <p className="text-3xl font-bold bg-linear-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                     {gameState.score}
                   </p>
                 </div>
@@ -299,7 +299,7 @@ export function Game2048({ gameId }: Game2048Props) {
                 )}
                 <Button
                   onClick={handleNewGame}
-                  className="w-full bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
+                  className="w-full bg-linear-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
                   size="lg"
                 >
                   Try Again

@@ -221,7 +221,7 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
               <motion.button
                 key={i}
                 onClick={() => whackMole(i)}
-                className="relative aspect-square rounded-2xl bg-gradient-to-b from-amber-900 to-amber-950 border-4 border-amber-800 overflow-hidden cursor-pointer disabled:cursor-not-allowed"
+                className="relative aspect-square rounded-2xl bg-linear-to-b from-amber-900 to-amber-950 border-4 border-amber-800 overflow-hidden cursor-pointer disabled:cursor-not-allowed"
                 disabled={gameState !== "playing"}
                 whileHover={gameState === "playing" ? { scale: 1.05 } : {}}
                 whileTap={gameState === "playing" ? { scale: 0.95 } : {}}

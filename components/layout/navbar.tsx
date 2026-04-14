@@ -20,9 +20,9 @@ export function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60"
     >
-      <div className="container flex h-16 items-center justify-between gap-4 px-4">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex items-center gap-2 whitespace-nowrap group">
           <motion.div
             whileHover={{ rotate: 360, scale: 1.1 }}
@@ -30,7 +30,7 @@ export function Navbar() {
           >
             <Gamepad2 className="h-5 w-5 md:h-6 md:w-6 text-primary" />
           </motion.div>
-          <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <span className="text-lg md:text-xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             Numerica
           </span>
         </Link>

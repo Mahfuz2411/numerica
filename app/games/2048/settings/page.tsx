@@ -4,6 +4,16 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Trash2, AlertTriangle } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const GAME_ID = "2048"
 
@@ -87,50 +97,38 @@ export default function Settings2048Page() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!showConfirm ? (
-            <div>
-              <Button
-                variant="destructive"
-                onClick={() => setShowConfirm(true)}
-                className="gap-2"
-              >
-                <Trash2 className="h-4 w-4" />
-                Clear All Data
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2">
-                This will delete your best score, games played, and all statistics.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="bg-destructive/10 border border-destructive/20 rounded p-4">
-                <p className="text-sm font-semibold text-destructive mb-2">
-                  Are you sure?
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  This action cannot be undone. All your scores and statistics will be permanently deleted.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="destructive"
-                  onClick={handleClearData}
-                  className="gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Yes, Delete Everything
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowConfirm(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
+          <div>
+            <Button
+              variant="destructive"
+              onClick={() => setShowConfirm(true)}
+              className="gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Clear All Data
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2">
+              This will delete your best score, games played, and all statistics.
+            </p>
+          </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all 2048 data?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All your scores and statistics will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleClearData}>
+              Yes, Delete Everything
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

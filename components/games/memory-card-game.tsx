@@ -167,7 +167,7 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
                                         <div
                                             className={cn(
                                                 "absolute inset-0 rounded-md border-2 flex items-center justify-center",
-                                                "bg-gradient-to-br from-primary to-primary/60",
+                                                "bg-linear-to-br from-primary to-primary/60",
                                                 card.isMatched && "opacity-0"
                                             )}
                                             style={{ backfaceVisibility: "hidden" }}

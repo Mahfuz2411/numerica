@@ -10,7 +10,7 @@ export function Footer() {
       transition={{ delay: 0.2 }}
       className="border-t py-6 md:py-8 mt-auto"
     >
-      <div className="container px-4">
+      <div className="mx-auto w-full max-w-7xl px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           <div>
             <h3 className="font-semibold mb-2">Numerica</h3>

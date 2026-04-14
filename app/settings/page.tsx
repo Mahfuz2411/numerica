@@ -8,50 +8,133 @@ import { Database, Palette, Volume2, Moon, Sun, Trash2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { gameDB } from "@/lib/db/game-db"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
 type GameStorageInfo = {
   gameId: string
   gameName: string
   scoreCount: number
+  localEntryCount: number
   estimatedSize: string
 }
+
+const STORAGE_GAMES = [
+  {
+    id: "2048",
+    name: "2048",
+    storagePrefixes: ["2048-", "numerica-settings-2048"],
+  },
+  {
+    id: "tic-tac-toe",
+    name: "Tic-Tac-Toe",
+    storagePrefixes: ["tic-tac-toe", "numerica-settings-tic-tac-toe"],
+  },
+  {
+    id: "memory-card",
+    name: "Memory Card Game",
+    storagePrefixes: ["memory-card", "numerica-settings-memory-card"],
+  },
+  {
+    id: "minesweeper",
+    name: "Minesweeper",
+    storagePrefixes: ["minesweeper", "numerica-settings-minesweeper"],
+  },
+  {
+    id: "sudoku",
+    name: "Sudoku",
+    storagePrefixes: ["sudoku-", "numerica-settings-sudoku"],
+  },
+  {
+    id: "whack-a-mole",
+    name: "Whack-a-Mole",
+    storagePrefixes: ["whack-a-mole-", "numerica-settings-whack-a-mole"],
+  },
+]
+
+type ClearTarget =
+  | { type: "game"; gameId: string; gameName: string }
+  | { type: "all" }
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [storageInfo, setStorageInfo] = useState<GameStorageInfo[]>([])
   const [isLoadingStorage, setIsLoadingStorage] = useState(true)
+  const [clearTarget, setClearTarget] = useState<ClearTarget | null>(null)
+  const [isClearing, setIsClearing] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     loadStorageInfo()
   }, [])
 
+  const bytesToReadableSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`
+
+    const sizeKB = bytes / 1024
+    if (sizeKB < 1024) return `${sizeKB.toFixed(2)} KB`
+
+    const sizeMB = sizeKB / 1024
+    return `${sizeMB.toFixed(2)} MB`
+  }
+
+  const getMatchingStorageKeys = (prefixes: string[]) => {
+    const matches: string[] = []
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key) continue
+
+      if (prefixes.some((prefix) => key.startsWith(prefix))) {
+        matches.push(key)
+      }
+    }
+
+    return matches
+  }
+
   const loadStorageInfo = async () => {
     try {
       setIsLoadingStorage(true)
-      const games = [
-        { id: "tic-tac-toe", name: "🎯 Tic-Tac-Toe" },
-        { id: "memory-card", name: "🃏 Memory Card Game" },
-      ]
 
       const info: GameStorageInfo[] = []
       
-      for (const game of games) {
+      for (const game of STORAGE_GAMES) {
         const scores = await gameDB.getScoresByGame(game.id, 1000)
         const scoreCount = scores.length
-        
-        // Estimate storage size (rough calculation)
-        const avgScoreSize = 200 // bytes per score entry (approximate)
-        const totalBytes = scoreCount * avgScoreSize
-        const sizeKB = totalBytes / 1024
-        const estimatedSize = sizeKB < 1 ? `${totalBytes} B` : `${sizeKB.toFixed(2)} KB`
+
+        const scoreBytes = scores.reduce((total, score) => {
+          return total + JSON.stringify(score).length
+        }, 0)
+
+        const localKeys = getMatchingStorageKeys(game.storagePrefixes)
+        const localBytes = localKeys.reduce((total, key) => {
+          const value = localStorage.getItem(key) ?? ""
+          return total + key.length + value.length
+        }, 0)
+
+        const totalBytes = scoreBytes + localBytes
+
+        if (scoreCount === 0 && localKeys.length === 0) {
+          continue
+        }
 
         info.push({
           gameId: game.id,
           gameName: game.name,
           scoreCount,
-          estimatedSize,
+          localEntryCount: localKeys.length,
+          estimatedSize: bytesToReadableSize(totalBytes),
         })
       }
 
@@ -64,47 +147,44 @@ export default function SettingsPage() {
   }
 
   const handleClearGameData = async (gameId: string, gameName: string) => {
-    if (confirm(`Are you sure you want to clear all data for ${gameName}?`)) {
-      try {
-        await gameDB.clearScores(gameId)
-        
-        // Also clear localStorage for this game
-        const keysToRemove = []
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i)
-          if (key && key.startsWith(gameId)) {
-            keysToRemove.push(key)
+    try {
+      await gameDB.clearScores(gameId)
+
+      const game = STORAGE_GAMES.find((item) => item.id === gameId)
+      const keysToRemove = game ? getMatchingStorageKeys(game.storagePrefixes) : []
+      keysToRemove.forEach((key) => localStorage.removeItem(key))
+
+      if (game) {
+        const sessionKeysToRemove: string[] = []
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i)
+          if (key && game.storagePrefixes.some((prefix) => key.startsWith(prefix))) {
+            sessionKeysToRemove.push(key)
           }
         }
-        keysToRemove.forEach(key => localStorage.removeItem(key))
-        
-        // Reload storage info
-        await loadStorageInfo()
-      } catch (error) {
-        console.error("Error clearing game data:", error)
-        alert("Failed to clear game data")
+        sessionKeysToRemove.forEach((key) => sessionStorage.removeItem(key))
       }
+
+      await loadStorageInfo()
+      toast.success(`${gameName} data cleared.`)
+    } catch (error) {
+      console.error("Error clearing game data:", error)
+      toast.error("Failed to clear game data")
     }
   }
 
   const handleClearAllData = async () => {
-    if (confirm("Are you sure you want to clear ALL game data including scores and settings?")) {
-      try {
-        // Clear all scores from IndexedDB
-        await gameDB.clearScores()
-        
-        // Clear localStorage and sessionStorage
-        localStorage.clear()
-        sessionStorage.clear()
-        
-        // Reload storage info
-        await loadStorageInfo()
-        
-        alert("All data cleared!")
-      } catch (error) {
-        console.error("Error clearing all data:", error)
-        alert("Failed to clear all data")
-      }
+    try {
+      await gameDB.clearScores()
+
+      localStorage.clear()
+      sessionStorage.clear()
+
+      await loadStorageInfo()
+      toast.success("All data cleared.")
+    } catch (error) {
+      console.error("Error clearing all data:", error)
+      toast.error("Failed to clear all data")
     }
   }
 
@@ -211,15 +291,14 @@ export default function SettingsPage() {
                             <div className="flex-1">
                               <p className="font-medium text-sm">{game.gameName}</p>
                               <p className="text-xs text-muted-foreground">
-                                {game.scoreCount} {game.scoreCount === 1 ? "score" : "scores"} · {game.estimatedSize}
+                                {game.scoreCount} {game.scoreCount === 1 ? "score" : "scores"} · {game.localEntryCount} {game.localEntryCount === 1 ? "local item" : "local items"} · {game.estimatedSize}
                               </p>
                             </div>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleClearGameData(game.gameId, game.gameName)}
+                              onClick={() => setClearTarget({ type: "game", gameId: game.gameId, gameName: game.gameName })}
                               className="text-destructive hover:text-destructive"
-                              disabled={game.scoreCount === 0}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -236,7 +315,7 @@ export default function SettingsPage() {
                       <Button
                         variant="destructive"
                         className="w-full justify-start gap-2"
-                        onClick={handleClearAllData}
+                        onClick={() => setClearTarget({ type: "all" })}
                       >
                         <Trash2 className="h-4 w-4" />
                         Clear All Data
@@ -251,6 +330,58 @@ export default function SettingsPage() {
             </Card>
           </div>
         </motion.div>
+
+        <AlertDialog
+          open={clearTarget !== null}
+          onOpenChange={(open) => {
+            if (!open) {
+              setClearTarget(null)
+            }
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {clearTarget?.type === "all"
+                  ? "Clear all data?"
+                  : `Clear ${clearTarget?.gameName} data?`}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {clearTarget?.type === "all"
+                  ? "This will delete all saved scores, settings, and preferences across the site."
+                  : "This will delete the saved scores and local storage entries for this game."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isClearing}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                disabled={isClearing}
+                onClick={async () => {
+                  const target = clearTarget
+                  setClearTarget(null)
+
+                  if (!target) {
+                    return
+                  }
+
+                  setIsClearing(true)
+                  try {
+                    if (target.type === "all") {
+                      await handleClearAllData()
+                    } else {
+                      await handleClearGameData(target.gameId, target.gameName)
+                    }
+                  } finally {
+                    setIsClearing(false)
+                  }
+                }}
+              >
+                {isClearing ? "Clearing..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   )

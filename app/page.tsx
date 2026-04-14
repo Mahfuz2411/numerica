@@ -4,8 +4,9 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { Gamepad2, Trophy, Grid3x3, WifiOff } from "lucide-react"
 import { MainLayout } from "@/components/layout/main-layout"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const container = {
   hidden: { opacity: 0 },
@@ -43,7 +44,7 @@ export default function HomePage() {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <section className="container px-4 py-12 md:py-20 lg:py-32 relative overflow-hidden">
+      <section className="mx-auto w-full max-w-7xl px-4 py-12 md:py-20 lg:py-32 relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -66,7 +67,7 @@ export default function HomePage() {
             className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight px-4"
           >
             Welcome to{" "}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Numerica
             </span>
           </motion.h1>
@@ -87,18 +88,24 @@ export default function HomePage() {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 justify-center px-4"
           >
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/games">Browse Games</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-              <Link href="/settings">Settings</Link>
-            </Button>
+            <Link
+              href="/games"
+              className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
+            >
+              Browse Games
+            </Link>
+            <Link
+              href="/settings"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full sm:w-auto")}
+            >
+              Settings
+            </Link>
           </motion.div>
         </motion.div>
       </section>
 
       {/* Features */}
-      <section className="container px-4 py-16">
+      <section className="mx-auto w-full max-w-7xl px-4 py-16">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -139,7 +146,7 @@ export default function HomePage() {
       </section>
 
       {/* About/Developer Section */}
-      <section className="container px-4 py-16">
+      <section className="mx-auto w-full max-w-7xl px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

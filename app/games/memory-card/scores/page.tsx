@@ -6,12 +6,25 @@ import { Trash2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { gameDB, type GameScore } from "@/lib/db/game-db"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
 const GAME_ID = "memory-card"
 
 export default function MemoryCardScoresPage() {
   const [scores, setScores] = useState<GameScore[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [isClearing, setIsClearing] = useState(false)
 
   useEffect(() => {
     loadScores()
@@ -30,13 +43,16 @@ export default function MemoryCardScoresPage() {
   }
 
   const handleClearScores = async () => {
-    if (confirm("Are you sure you want to clear all scores for this game?")) {
-      try {
-        await gameDB.clearScores(GAME_ID)
-        setScores([])
-      } catch (error) {
-        console.error("Error clearing scores:", error)
-      }
+    try {
+      setIsClearing(true)
+      await gameDB.clearScores(GAME_ID)
+      setScores([])
+      toast.success("All scores cleared!")
+    } catch (error) {
+      console.error("Error clearing scores:", error)
+      toast.error("Failed to clear scores")
+    } finally {
+      setIsClearing(false)
     }
   }
 
@@ -51,7 +67,7 @@ export default function MemoryCardScoresPage() {
           <Button
             variant="destructive"
             size="sm"
-            onClick={handleClearScores}
+            onClick={() => setConfirmOpen(true)}
             disabled={scores.length === 0}
           >
             <Trash2 className="h-4 w-4 mr-2" />
@@ -107,6 +123,30 @@ export default function MemoryCardScoresPage() {
           </div>
         )}
       </CardContent>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all scores?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all saved scores for this game.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isClearing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isClearing}
+              onClick={async () => {
+                setConfirmOpen(false)
+                await handleClearScores()
+              }}
+            >
+              {isClearing ? "Clearing..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

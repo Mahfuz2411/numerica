@@ -6,13 +6,6 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Play, BookOpen, Trophy, Settings, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
 
 interface GameNavigationProps {
   gameBasePath: string
@@ -39,43 +32,36 @@ export function GameNavigation({ gameBasePath, children }: GameNavigationProps) 
 
   return (
     <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6">
-      {/* Mobile Menu Button */}
-      <div className="md:hidden flex justify-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              <Menu className="h-4 w-4" />
-              {activeTab.label}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-48">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              const isActive = pathname === `${gameBasePath}${tab.path}`
-              return (
-                <DropdownMenuItem key={tab.id} asChild>
-                  <Link
-                    href={`${gameBasePath}${tab.path}`}
-                    className={cn(
-                      "flex items-center gap-2 cursor-pointer",
-                      isActive && "bg-primary/10 text-primary"
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{tab.label}</span>
-                  </Link>
-                </DropdownMenuItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Mobile Menu */}
+      <div className="md:hidden w-full rounded-xl border bg-card/80 p-2 shadow-sm">
+        <div className="grid grid-cols-2 gap-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            const isActive = pathname === `${gameBasePath}${tab.path}`
+            return (
+              <Link
+                key={tab.id}
+                href={`${gameBasePath}${tab.path}`}
+                className={cn(
+                  "flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-background hover:bg-accent"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </div>
 
       {/* Desktop Sidebar */}
       <motion.aside
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="hidden md:block w-48 flex-shrink-0"
+        className="hidden md:block w-48 shrink-0"
       >
         <div className="flex flex-col gap-2">
           {tabs.map((tab) => {
@@ -94,7 +80,7 @@ export function GameNavigation({ gameBasePath, children }: GameNavigationProps) 
                       : "bg-card hover:bg-accent"
                   )}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <Icon className="h-5 w-5 shrink-0" />
                   <span className="font-medium">{tab.label}</span>
                   {isActive && (
                     <motion.div

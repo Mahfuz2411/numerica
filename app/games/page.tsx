@@ -81,7 +81,7 @@ const games = [
 export default function GamesPage() {
   return (
     <MainLayout>
-      <div className="container px-4 py-12 md:py-16">
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
