@@ -53,6 +53,7 @@ const capabilities = [
 
 const gameCatalog = [
   { name: "2048", detail: "Tile merge strategy" },
+  { name: "Guess the Number", detail: "Code cracking" },
   { name: "Minesweeper", detail: "Risk and logic" },
   { name: "Sudoku", detail: "Pattern deduction" },
   { name: "Memory Card", detail: "Focus and recall" },
@@ -61,7 +62,7 @@ const gameCatalog = [
 ]
 
 const stats = [
-  { label: "Games Available", value: "6" },
+  { label: "Games Available", value: "7" },
   { label: "Install Required", value: "0" },
   { label: "Offline Support", value: "Yes" },
 ]

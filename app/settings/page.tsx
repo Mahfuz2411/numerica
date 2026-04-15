@@ -59,6 +59,11 @@ const STORAGE_GAMES = [
     name: "Whack-a-Mole",
     storagePrefixes: ["whack-a-mole-", "numerica-settings-whack-a-mole"],
   },
+  {
+    id: "guess-the-number",
+    name: "Guess the Number",
+    storagePrefixes: ["guess-the-number-", "numerica-settings-guess-the-number"],
+  },
 ]
 
 type ClearTarget =

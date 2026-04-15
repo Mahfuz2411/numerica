@@ -76,6 +76,15 @@ const games = [
     players: "1 Player",
     disabled: false,
   },
+  {
+    id: "guess-the-number",
+    title: "Guess the Number",
+    description: "Crack the hidden 5-digit code. Get feedback on correct positions after each guess.",
+    icon: "🔐",
+    difficulty: "Medium",
+    players: "1 Player",
+    disabled: false,
+  },
 ]
 
 export default function GamesPage() {
