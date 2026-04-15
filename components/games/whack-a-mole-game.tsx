@@ -215,7 +215,7 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
       <Card className="p-4">
-        <div className="relative mx-auto w-full max-w-[min(62vh,30rem)] aspect-square">
+        <div className="relative mx-auto w-full max-w-sm sm:max-w-md px-2 sm:px-0 aspect-square">
           <div className="grid grid-cols-3 gap-3">
             {Array.from({ length: 9 }, (_, i) => (
               <motion.button

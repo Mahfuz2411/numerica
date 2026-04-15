@@ -140,7 +140,7 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
       <Card className="p-4">
-        <div className="mx-auto w-[min(62vh,28rem)] max-w-full">
+        <div className="mx-auto w-full max-w-xs sm:max-w-sm px-2 sm:px-0">
           <div className="grid grid-cols-3 gap-2 aspect-square">
             {board.map((cell, index) => {
               const isWinningCell = winningLine?.includes(index)

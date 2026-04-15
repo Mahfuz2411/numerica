@@ -137,7 +137,7 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
     return (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
             <UICard className="p-4">
-                <div className="mx-auto w-[min(62vh,30rem)] max-w-full">
+                <div className="mx-auto w-full max-w-sm sm:max-w-md px-2 sm:px-0">
                     <div className="grid grid-cols-4 gap-2">{!mounted || cards.length === 0 ? (
                         Array.from({ length: 16 }).map((_, index) => (
                             <div

@@ -156,7 +156,7 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
     return (
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
         <Card className="p-4">
-          <div className="w-full aspect-square max-w-[min(62vh,24rem)] mx-auto bg-card/50 animate-pulse rounded" />
+          <div className="w-full aspect-square max-w-sm sm:max-w-md mx-auto bg-card/50 animate-pulse rounded" />
         </Card>
         <Card className="p-4">
           <div className="h-52 bg-card/50 animate-pulse rounded" />
@@ -168,7 +168,7 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
       <Card className="p-4">
-        <div className="mx-auto overflow-hidden" style={{ maxWidth: "min(62vh, 24rem)" }}>
+        <div className="mx-auto overflow-hidden w-full px-2 sm:px-4" style={{ maxWidth: "28rem" }}>
           <div
             className={cn(
               "grid rounded border border-border",

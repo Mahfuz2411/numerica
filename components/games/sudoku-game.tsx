@@ -184,7 +184,7 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
         <Card className="p-4">
-          <div className="relative mx-auto w-[min(62vh,36rem)] max-w-full">
+          <div className="relative mx-auto w-full max-w-2xl px-2 sm:px-0">
             {(gameState === "paused" || gameState === "idle") && (
               <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
                 <div className="text-center space-y-4">
