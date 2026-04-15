@@ -1,6 +1,21 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+
+const footerLinks = [
+  { label: "Home", href: "/" },
+  { label: "Games", href: "/games" },
+  { label: "Settings", href: "/settings" },
+]
+
+const productPoints = [
+  "Instant access to classic logic games",
+  "Local progress and settings management",
+  "Responsive, offline-friendly experience",
+]
 
 export function Footer() {
   return (
@@ -8,45 +23,57 @@ export function Footer() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.2 }}
-      className="border-t py-6 md:py-8 mt-auto"
+      className="mt-auto border-t bg-background/80 py-8 md:py-10"
     >
       <div className="mx-auto w-full max-w-7xl px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-          <div>
-            <h3 className="font-semibold mb-2">Numerica</h3>
-            <p className="text-sm text-muted-foreground">
-              Enjoy smooth, engaging logical games with beautiful animations
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-[1.2fr_0.8fr_0.9fr] md:gap-10">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-semibold">Numerica</h3>
+              <Badge variant="secondary">PWA</Badge>
+            </div>
+            <p className="max-w-sm text-sm text-muted-foreground">
+              A focused game hub for quick rounds, local progress, and polished puzzle experiences across devices.
             </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {productPoints.map((point) => (
+                <Badge key={point} variant="outline" className="rounded-full px-3 py-1 text-[11px] font-normal">
+                  {point}
+                </Badge>
+              ))}
+            </div>
           </div>
+
           <div>
-            <h3 className="font-semibold mb-2">Quick Links</h3>
-            <ul className="space-y-1 text-sm text-muted-foreground">
-              <li>
-                <a href="/" className="hover:text-primary transition-colors">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="/games" className="hover:text-primary transition-colors">
-                  Games
-                </a>
-              </li>
-              <li>
-                <a href="/settings" className="hover:text-primary transition-colors">
-                  Settings
-                </a>
-              </li>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Product
+            </h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {footerLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition-colors hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-          <div className="sm:col-span-2 md:col-span-1">
-            <h3 className="font-semibold mb-2">Developer</h3>
-            <p className="text-sm text-muted-foreground">
-              Built with ❤️ using Next.js, TypeScript, and Framer Motion
+
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Platform
+            </h3>
+            <p className="max-w-sm text-sm text-muted-foreground">
+              Built with Next.js, TypeScript, Tailwind, and motion-driven UI patterns for a responsive product feel.
             </p>
           </div>
         </div>
-        <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Numerica. All rights reserved.
+
+        <Separator className="my-6 md:my-8" />
+
+        <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground md:flex-row md:items-center md:justify-between md:text-left">
+          <p>© {new Date().getFullYear()} Numerica. All rights reserved.</p>
+          <p>Designed for quick access, clear focus, and uninterrupted play.</p>
         </div>
       </div>
     </motion.footer>
