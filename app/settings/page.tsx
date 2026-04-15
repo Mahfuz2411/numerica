@@ -64,6 +64,11 @@ const STORAGE_GAMES = [
     name: "Guess the Number",
     storagePrefixes: ["guess-the-number-", "numerica-settings-guess-the-number"],
   },
+  {
+    id: "cross-sum",
+    name: "Cross Sum",
+    storagePrefixes: ["cross-sum-", "numerica-settings-cross-sum", "cross-sume-", "numerica-settings-cross-sume"],
+  },
 ]
 
 type ClearTarget =

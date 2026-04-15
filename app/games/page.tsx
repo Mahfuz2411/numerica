@@ -85,6 +85,15 @@ const games = [
     players: "1 Player",
     disabled: false,
   },
+  {
+    id: "cross-sum",
+    title: "Cross Sum",
+    description: "Remove extra numbers so row and column sums match the targets. You only get 3 mistakes!",
+    icon: "🧮",
+    difficulty: "Easy to Hard",
+    players: "1 Player",
+    disabled: false,
+  },
 ]
 
 export default function GamesPage() {

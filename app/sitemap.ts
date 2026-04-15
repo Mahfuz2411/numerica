@@ -10,7 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'whack-a-mole',
     'sudoku',
     '2048',
-    'guess-the-number'
+    'guess-the-number',
+    'cross-sum'
   ]
 
   const gamePages = games.flatMap(game => [
