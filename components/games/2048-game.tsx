@@ -132,7 +132,7 @@ export function Game2048({ gameId }: Game2048Props) {
       <Card className="overflow-hidden shadow-lg p-4">
         <div
           ref={gameContainerRef}
-          className="relative mx-auto w-full max-w-sm sm:max-w-md px-2 sm:px-0 bg-linear-to-b from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 rounded-lg aspect-square cursor-grab active:cursor-grabbing"
+          className="relative mx-auto w-full max-w-sm sm:max-w-md bg-linear-to-b from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 rounded-lg aspect-square cursor-grab active:cursor-grabbing"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >

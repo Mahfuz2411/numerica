@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import {
@@ -11,6 +12,7 @@ import {
   ShieldCheck,
   Sparkles,
   Trophy,
+  X,
 } from "lucide-react"
 import { MainLayout } from "@/components/layout/main-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -65,16 +67,36 @@ const stats = [
 ]
 
 export default function HomePage() {
+  const [showMobileNotice, setShowMobileNotice] = useState(true)
+
   return (
     <MainLayout>
-      <section className="relative mx-auto w-full max-w-7xl overflow-hidden px-4 pb-10 pt-10 md:pb-16 md:pt-14 lg:pb-24 lg:pt-20">
+      <section className="relative mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-7xl flex-col overflow-hidden px-4 py-10 md:min-h-[calc(100dvh-4rem)] md:py-14 lg:min-h-[calc(100vh-4rem)] lg:py-20">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-linear-to-b from-emerald-500/15 via-cyan-500/10 to-transparent blur-3xl" />
+
+        {showMobileNotice && (
+          <div className="mb-4 lg:hidden">
+            <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-amber-100 shadow-lg shadow-black/10 backdrop-blur">
+              <p className="flex-1 text-xs leading-relaxed sm:text-sm">
+                This site is currently optimized for desktop screens. We are actively improving the mobile and tablet UI/UX experience.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowMobileNotice(false)}
+                aria-label="Dismiss compatibility notice"
+                className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded text-amber-200/80 transition hover:bg-amber-400/20 hover:text-amber-100"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
 
         <motion.div
           initial="hidden"
           animate="show"
           variants={appear}
-          className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center"
+          className="mx-auto grid flex-1 max-w-6xl gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center"
         >
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
