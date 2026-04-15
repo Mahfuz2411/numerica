@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { websiteSchema, organizationSchema } from "@/lib/seo/structured-data";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -86,6 +87,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
