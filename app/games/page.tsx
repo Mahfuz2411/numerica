@@ -6,7 +6,7 @@ import Link from "next/link"
 import { MainLayout } from "@/components/layout/main-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Clock3, Search, Sparkles, Trophy } from "lucide-react"
+import { ArrowRight, Clock3, Search, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const container = {
@@ -194,7 +194,7 @@ export default function GamesPage() {
               Live filter and search
             </div>
 
-            <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
+            <div className="grid gap-3 md:grid-cols-[1fr_auto]">
               <label className="relative block">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -205,19 +205,6 @@ export default function GamesPage() {
                   className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm outline-none ring-0 transition-colors focus:border-cyan-400"
                 />
               </label>
-
-              <select
-                value={selectedGenre}
-                onChange={(e) => setSelectedGenre(e.target.value)}
-                className="h-10 rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-cyan-400"
-              >
-                <option value="All">All Genres</option>
-                {genres.map((genre) => (
-                  <option key={genre} value={genre}>
-                    {genre}
-                  </option>
-                ))}
-              </select>
 
               <select
                 value={selectedAge}
@@ -263,9 +250,8 @@ export default function GamesPage() {
 
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold md:text-xl">All Titles</h2>
-            <div className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-3 py-1 text-xs text-muted-foreground">
-              <Trophy className="h-3.5 w-3.5" />
-              Start with medium difficulty if you are new
+            <div className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/30 px-3 py-1 text-xs text-muted-foreground">
+              Showing {filteredGames.length} games • Sorted: New → Old
             </div>
           </div>
 
