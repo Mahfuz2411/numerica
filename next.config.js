@@ -1,10 +1,13 @@
 const withPWA = require("@ducanh2912/next-pwa").default({
   dest: "public",
+  register: true,
+  skipWaiting: true,
+  dynamicStartUrl: false,
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   swcMinify: true,
-  disable: process.env.NODE_ENV === "development",
+  disable: process.env.NEXT_PUBLIC_DISABLE_PWA === "true",
   workboxOptions: {
     disableDevLogs: true,
   },

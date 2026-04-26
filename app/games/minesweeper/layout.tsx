@@ -5,7 +5,7 @@ import { GameNavigation } from "@/components/games/game-navigation"
 
 export default function MinesweeperLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:py-6 md:py-8">
+    <div className="mx-auto w-full max-w-7xl px-3 py-2 sm:px-4 sm:py-3 md:py-4">
       <GameNavigation gameBasePath="/games/minesweeper" gameName="💣 Minesweeper">
         {children}
       </GameNavigation>

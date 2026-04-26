@@ -186,10 +186,10 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
-        <Card className="p-4">
-          <div className="relative mx-auto w-full max-w-2xl px-2 sm:px-0">
+    <div className="space-y-2">
+      <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+        <Card className="p-3 sm:p-4">
+          <div className="relative mx-auto w-full max-w-[19rem] px-1 sm:max-w-[22rem] sm:px-0 md:max-w-[25rem] lg:max-w-[27rem]">
             {(gameState === "paused" || gameState === "idle") && (
               <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
                 <div className="text-center space-y-4">
@@ -223,7 +223,7 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
                       whileHover={!cell.isFixed && gameState === "playing" ? { scale: 1.05 } : {}}
                       whileTap={!cell.isFixed && gameState === "playing" ? { scale: 0.95 } : {}}
                       className={cn(
-                        "aspect-square flex items-center justify-center text-lg font-semibold transition-colors relative",
+                        "aspect-square flex items-center justify-center text-base sm:text-lg font-semibold transition-colors relative",
                         "border border-border",
                         hasRightBorder && "border-r-2 border-r-foreground",
                         hasBottomBorder && "border-b-2 border-b-foreground",
@@ -237,11 +237,11 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
                       disabled={gameState !== "playing"}
                     >
                       {cell.value !== 0 ? (
-                        <span className={cn(cell.isFixed ? "text-base sm:text-lg" : "text-base sm:text-lg text-primary")}>
+                        <span className={cn(cell.isFixed ? "text-sm sm:text-base" : "text-sm sm:text-base text-primary")}>
                           {cell.value}
                         </span>
                       ) : cell.notes.length > 0 ? (
-                        <div className="grid grid-cols-3 gap-0 text-[0.5rem] sm:text-xs text-muted-foreground w-full h-full p-0.5">
+                        <div className="grid grid-cols-3 gap-0 text-[0.45rem] sm:text-[0.65rem] text-muted-foreground w-full h-full p-0.5">
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                             <div key={num} className="flex items-center justify-center">
                               {cell.notes.includes(num) ? num : ""}
