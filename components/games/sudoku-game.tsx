@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { RotateCcw, Lightbulb, Eraser, Pencil, Play, Pause, Trophy, Timer } from "lucide-react"
+import { Card } from "@/components/ui/card"
+import { RotateCcw, Lightbulb, Play, Pause, Timer } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   generatePuzzle,
@@ -33,6 +33,15 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
   const [hintsUsed, setHintsUsed] = useState(0)
   const [mistakes, setMistakes] = useState(0)
   const [highScore, setHighScore] = useState<number | null>(null)
+
+  useEffect(() => {
+    const onPause = () => {
+      setGameState((prev) => (prev === "playing" ? "paused" : prev))
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [])
 
   // Load high score
   useEffect(() => {
@@ -176,10 +185,6 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
 
-  useEffect(() => {
-    startNewGame()
-  }, [startNewGame])
-
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
@@ -252,15 +257,15 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
           </div>
         </Card>
 
-        <Card className="p-4 space-y-4 lg:sticky lg:top-24">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="font-semibold">Sudoku</h3>
+        <Card className="p-4 space-y-4 lg:sticky lg:top-4">
+          <div className="space-y-2 rounded-lg border p-3">
+            <p className="text-xs text-muted-foreground">Difficulty</p>
             <select
               value={difficulty}
               onChange={(e) => {
                 setDifficulty(e.target.value as Difficulty)
               }}
-              className="px-3 py-1.5 rounded-lg border bg-background text-sm"
+              className="w-full px-3 py-1.5 rounded-lg border bg-background text-sm"
               disabled={gameState === "playing" || gameState === "paused"}
             >
               {Object.entries(DIFFICULTIES).map(([key, { name }]) => (
@@ -271,66 +276,45 @@ export function SudokuGame({ gameId }: SudokuGameProps) {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="rounded-lg bg-blue-500/10 p-2 text-center">
-              <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Timer className="h-3 w-3 text-blue-500" />Time</div>
-              <div className="font-mono font-bold">{formatTime(elapsedTime)}</div>
-            </div>
-            <div className="rounded-lg bg-yellow-500/10 p-2 text-center">
-              <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Lightbulb className="h-3 w-3 text-yellow-500" />Hints</div>
-              <div className="font-bold">{hintsUsed}</div>
-            </div>
-            <div className="rounded-lg bg-red-500/10 p-2 text-center">
-              <div className="text-xs text-muted-foreground">Mistakes</div>
-              <div className="font-bold">{mistakes}</div>
-            </div>
-            <div className="rounded-lg bg-primary/10 p-2 text-center">
-              <div className="text-xs text-muted-foreground">Best</div>
-              <div className="font-mono font-bold">{highScore ? formatTime(highScore) : "--:--"}</div>
+          <div className="space-y-2 rounded-lg border p-3">
+            <p className="text-xs text-muted-foreground">Game Stats</p>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="rounded-lg bg-blue-500/10 p-2 text-center">
+                <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Timer className="h-3 w-3 text-blue-500" />Time</div>
+                <div className="font-mono font-bold">{formatTime(elapsedTime)}</div>
+              </div>
+              <div className="rounded-lg bg-yellow-500/10 p-2 text-center">
+                <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Lightbulb className="h-3 w-3 text-yellow-500" />Hints</div>
+                <div className="font-bold">{hintsUsed}</div>
+              </div>
+              <div className="rounded-lg bg-red-500/10 p-2 text-center">
+                <div className="text-xs text-muted-foreground">Mistakes</div>
+                <div className="font-bold">{mistakes}</div>
+              </div>
+              <div className="rounded-lg bg-muted/40 p-2 text-center">
+                <div className="text-xs text-muted-foreground">State</div>
+                <div className="font-bold capitalize">{gameState}</div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-5 gap-1.5">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-              <Button
-                key={num}
-                onClick={() => handleNumberInput(num)}
-                variant="outline"
-                size="sm"
-                className="aspect-square p-0"
-                disabled={gameState !== "playing"}
-              >
-                {num}
+          <div className="space-y-2 rounded-lg border p-3">
+            <p className="text-xs text-muted-foreground">Game Control</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={gameState === "idle" ? startNewGame : togglePause} variant="outline" disabled={gameState === "won"}>
+                {gameState === "paused" || gameState === "idle" ? <Play className="h-4 w-4 mr-1" /> : <Pause className="h-4 w-4 mr-1" />}
+                {gameState === "paused" || gameState === "idle" ? "Start" : "Pause"}
               </Button>
-            ))}
-            <Button
-              onClick={() => setNotesMode(!notesMode)}
-              variant={notesMode ? "default" : "outline"}
-              size="sm"
-              className="aspect-square p-0"
-              disabled={gameState !== "playing"}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+              <Button onClick={startNewGame} variant="outline">
+                <RotateCcw className="h-4 w-4 mr-1" />
+                New
+              </Button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Button onClick={clearCell} variant="outline" disabled={gameState !== "playing"}>
-              <Eraser className="h-4 w-4 mr-1" />
-              Clear
-            </Button>
-            <Button onClick={useHint} variant="outline" disabled={gameState !== "playing"}>
-              <Lightbulb className="h-4 w-4 mr-1" />
-              Hint
-            </Button>
-            <Button onClick={togglePause} variant="outline" disabled={gameState === "idle" || gameState === "won"}>
-              {gameState === "paused" ? <Play className="h-4 w-4 mr-1" /> : <Pause className="h-4 w-4 mr-1" />} 
-              {gameState === "paused" ? "Resume" : "Pause"}
-            </Button>
-            <Button onClick={startNewGame} variant="outline">
-              <RotateCcw className="h-4 w-4 mr-1" />
-              New
-            </Button>
+          <div className="space-y-2 rounded-lg border p-3 text-center">
+            <p className="text-xs text-muted-foreground">Best Score</p>
+            <p className="text-2xl font-bold font-mono">{highScore ? formatTime(highScore) : "--:--"}</p>
           </div>
         </Card>
       </div>

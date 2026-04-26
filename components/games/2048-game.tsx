@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { RotateCcw, Trophy, Zap, Gamepad2 } from "lucide-react"
+import { RotateCcw, Trophy, Zap } from "lucide-react"
 import {
   initializeGame,
   moveTiles,
@@ -20,12 +20,22 @@ interface Game2048Props {
 }
 
 export function Game2048({ gameId }: Game2048Props) {
+  const [sessionState, setSessionState] = useState<"idle" | "playing" | "paused">("idle")
   const [gameState, setGameState] = useState<GameState2048>(() => initializeGame())
   const [bestScore, setBestScore] = useState(0)
   const [showWinModal, setShowWinModal] = useState(false)
   const [continueAfterWin, setContinueAfterWin] = useState(false)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
   const gameContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onPause = () => {
+      setSessionState((prev) => (prev === "playing" ? "paused" : prev))
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [])
 
   // Load best score from localStorage
   useEffect(() => {
@@ -53,13 +63,14 @@ export function Game2048({ gameId }: Game2048Props) {
 
   // Handle move
   const handleMove = useCallback((direction: Direction) => {
+    if (sessionState !== "playing") return
     setGameState(prev => moveTiles(prev, direction))
-  }, [])
+  }, [sessionState])
 
   // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (showWinModal && !continueAfterWin) return
+      if (sessionState !== "playing" || (showWinModal && !continueAfterWin)) return
 
       const keyMap: Record<string, Direction> = {
         ArrowUp: 'up',
@@ -85,11 +96,11 @@ export function Game2048({ gameId }: Game2048Props) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [showWinModal, continueAfterWin, handleMove])
+  }, [showWinModal, continueAfterWin, handleMove, sessionState])
 
   // Handle touch/swipe
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (gameState.isGameOver || showWinModal) return
+    if (sessionState !== "playing" || gameState.isGameOver || showWinModal) return
     touchStartRef.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
@@ -120,11 +131,16 @@ export function Game2048({ gameId }: Game2048Props) {
     setGameState(initializeGame())
     setShowWinModal(false)
     setContinueAfterWin(false)
+    setSessionState("playing")
   }
 
   const handleContinue = () => {
     setShowWinModal(false)
     setContinueAfterWin(true)
+  }
+
+  const togglePause = () => {
+    setSessionState((prev) => (prev === "playing" ? "paused" : "playing"))
   }
 
   return (
@@ -136,6 +152,14 @@ export function Game2048({ gameId }: Game2048Props) {
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
+          {sessionState !== "playing" && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-lg bg-background/95 backdrop-blur-sm">
+              <Button onClick={sessionState === "idle" ? handleNewGame : togglePause}>
+                {sessionState === "idle" ? "Start Game" : "Resume Game"}
+              </Button>
+            </div>
+          )}
+
           <div className="absolute inset-3 sm:inset-4">
             <div className="absolute inset-0 grid grid-cols-4 gap-2">
               {Array.from({ length: 16 }).map((_, i) => (
@@ -145,7 +169,7 @@ export function Game2048({ gameId }: Game2048Props) {
 
             <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-2">
               <AnimatePresence mode="popLayout">
-                {gameState.tiles.map(tile => (
+                {sessionState === "playing" && gameState.tiles.map(tile => (
                   <TileComponent key={tile.id} tile={tile} />
                 ))}
               </AnimatePresence>
@@ -154,50 +178,52 @@ export function Game2048({ gameId }: Game2048Props) {
         </div>
       </Card>
 
-      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <h2 className="text-xl font-bold bg-linear-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">2048</h2>
-            <p className="text-xs text-muted-foreground">Merge tiles to reach 2048</p>
-          </div>
-          <Button
-            onClick={handleNewGame}
-            size="sm"
-            className="gap-2 bg-linear-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700"
-          >
-            <RotateCcw className="h-4 w-4" />
-            New
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">Score</div>
-            <motion.div key={gameState.score} initial={{ scale: 1.15 }} animate={{ scale: 1 }} className="text-lg font-bold">{gameState.score}</motion.div>
-          </div>
-          <div className="rounded-lg bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Trophy className="h-3 w-3" />Best</div>
-            <div className="text-lg font-bold">{Math.max(bestScore, gameState.score)}</div>
-          </div>
-          <div className="rounded-lg bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Zap className="h-3 w-3" />Moves</div>
-            <div className="text-lg font-bold">{gameState.moveCount}</div>
+      <Card className="p-4 space-y-4 lg:sticky lg:top-4">
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Stats</p>
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-lg bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">Score</div>
+              <motion.div key={gameState.score} initial={{ scale: 1.15 }} animate={{ scale: 1 }} className="text-lg font-bold">
+                {gameState.score}
+              </motion.div>
+            </div>
+            <div className="rounded-lg bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Zap className="h-3 w-3" />Moves</div>
+              <div className="text-lg font-bold">{gameState.moveCount}</div>
+            </div>
           </div>
         </div>
 
-        <div className="rounded-lg border p-3 text-xs text-muted-foreground space-y-2">
-          <div className="flex items-center gap-2"><Gamepad2 className="h-4 w-4" />Controls</div>
-          <div className="grid grid-cols-1 gap-1">
-            <span>Arrow Keys / W A S D</span>
-            <span>Swipe on Mobile</span>
-          </div>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Control</p>
+          {sessionState === "idle" ? (
+            <Button onClick={handleNewGame} className="w-full">Start Game</Button>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={togglePause} variant="outline" size="sm" className="w-full">
+                {sessionState === "playing" ? "Pause" : "Resume"}
+              </Button>
+              <Button
+                onClick={handleNewGame}
+                size="sm"
+                variant="outline"
+                className="w-full gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
+                New
+              </Button>
+            </div>
+          )}
         </div>
 
-        {gameState.isGameOver && (
-          <div className="rounded-lg border border-red-300 bg-red-50 dark:bg-red-950/30 p-3 text-center">
-            <p className="text-sm font-semibold text-red-700 dark:text-red-400">No more moves available!</p>
-          </div>
-        )}
+        <div className="space-y-2 rounded-lg border p-3 text-center">
+          <p className="text-xs text-muted-foreground">Best Score</p>
+          <p className="inline-flex items-center gap-1 text-2xl font-bold">
+            <Trophy className="h-4 w-4" />
+            {Math.max(bestScore, gameState.score)}
+          </p>
+        </div>
       </Card>
 
       {/* Win Modal */}

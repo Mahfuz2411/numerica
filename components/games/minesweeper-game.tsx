@@ -26,11 +26,13 @@ interface MinesweeperGameProps {
 }
 
 export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
+  const [sessionState, setSessionState] = useState<"idle" | "playing" | "paused">("idle")
   const [difficulty, setDifficulty] = useState<Difficulty>("easy")
   const [board, setBoard] = useState<Cell[][]>([])
   const [gameState, setGameState] = useState<"playing" | "won" | "lost">("playing")
   const [startTime, setStartTime] = useState<number | null>(null)
   const [currentTime, setCurrentTime] = useState(0)
+  const [bestTime, setBestTime] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
   const [isFirstClick, setIsFirstClick] = useState(true)
 
@@ -59,16 +61,41 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
   }, [difficulty, resetGame])
 
   useEffect(() => {
-    if (gameState === "playing" && startTime) {
+    if (sessionState === "playing" && gameState === "playing" && startTime) {
       const interval = setInterval(() => {
         setCurrentTime(Math.floor((Date.now() - startTime) / 1000))
       }, 1000)
       return () => clearInterval(interval)
     }
-  }, [gameState, startTime])
+  }, [gameState, startTime, sessionState])
+
+  useEffect(() => {
+    const onPause = () => {
+      setSessionState((prev) => (prev === "playing" ? "paused" : prev))
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [])
+
+  useEffect(() => {
+    const savedBestTime = localStorage.getItem(`${gameId}-${difficulty}-best-time`)
+    if (savedBestTime) {
+      setBestTime(parseInt(savedBestTime, 10))
+    } else {
+      setBestTime(null)
+    }
+  }, [difficulty, gameId])
+
+  useEffect(() => {
+    if (gameState === "won" && currentTime > 0 && (!bestTime || currentTime < bestTime)) {
+      setBestTime(currentTime)
+      localStorage.setItem(`${gameId}-${difficulty}-best-time`, currentTime.toString())
+    }
+  }, [gameState, currentTime, bestTime, difficulty, gameId])
 
   const handleCellClick = (row: number, col: number) => {
-    if (gameState !== "playing" || board[row][col].state !== "hidden") return
+    if (sessionState !== "playing" || gameState !== "playing" || board[row][col].state !== "hidden") return
 
     // First click: generate board with safe zone around clicked cell
     if (isFirstClick) {
@@ -105,7 +132,7 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
 
   const handleCellRightClick = (e: React.MouseEvent, row: number, col: number) => {
     e.preventDefault()
-    if (gameState !== "playing") return
+    if (sessionState !== "playing" || gameState !== "playing") return
 
     const newBoard = toggleFlag(board, row, col)
     setBoard(newBoard)
@@ -152,6 +179,21 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
     return colors[value] || ""
   }
 
+  const startGame = () => {
+    resetGame()
+    setSessionState("playing")
+  }
+
+  const togglePause = () => {
+    setSessionState((prev) => {
+      if (prev === "playing") return "paused"
+      if (startTime) {
+        setStartTime(Date.now() - currentTime * 1000)
+      }
+      return "playing"
+    })
+  }
+
   if (!mounted || board.length === 0) {
     return (
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
@@ -168,7 +210,15 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
       <Card className="p-4">
-        <div className="mx-auto overflow-hidden w-full px-2 sm:px-4" style={{ maxWidth: "28rem" }}>
+        <div className="relative mx-auto overflow-hidden w-full px-2 sm:px-4" style={{ maxWidth: "28rem" }}>
+          {sessionState !== "playing" && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/95 backdrop-blur-sm">
+              <Button onClick={sessionState === "idle" ? startGame : togglePause}>
+                {sessionState === "idle" ? "Start Game" : "Resume Game"}
+              </Button>
+            </div>
+          )}
+
           <div
             className={cn(
               "grid rounded border border-border",
@@ -219,64 +269,77 @@ export function MinesweeperGame({ gameId }: MinesweeperGameProps) {
         </div>
       </Card>
 
-      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
-        <div className="grid grid-cols-3 gap-2">
-          <Button
-            variant={difficulty === "easy" ? "default" : "outline"}
-            onClick={() => setDifficulty("easy")}
-            size="sm"
-            className="text-xs"
-          >
-            Easy
-          </Button>
-          <Button
-            variant={difficulty === "medium" ? "default" : "outline"}
-            onClick={() => setDifficulty("medium")}
-            size="sm"
-            className="text-xs"
-          >
-            Medium
-          </Button>
-          <Button
-            variant={difficulty === "hard" ? "default" : "outline"}
-            onClick={() => setDifficulty("hard")}
-            size="sm"
-            className="text-xs"
-          >
-            Hard
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-md bg-muted/40 p-2">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Bomb className="h-3 w-3" />Mines</div>
-            <p className="text-lg font-bold">{remainingMines}</p>
-          </div>
-          <div className="rounded-md bg-muted/40 p-2">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Clock className="h-3 w-3" />Time</div>
-            <p className="text-lg font-bold">{formatTime(currentTime)}</p>
-          </div>
-          <div className="rounded-md bg-muted/40 p-2">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Flag className="h-3 w-3" />Flags</div>
-            <p className="text-lg font-bold">{flags}</p>
+      <Card className="p-4 space-y-4 lg:sticky lg:top-4">
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Difficulty</p>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant={difficulty === "easy" ? "default" : "outline"}
+              onClick={() => setDifficulty("easy")}
+              size="sm"
+              className="text-xs"
+            >
+              Easy
+            </Button>
+            <Button
+              variant={difficulty === "medium" ? "default" : "outline"}
+              onClick={() => setDifficulty("medium")}
+              size="sm"
+              className="text-xs"
+            >
+              Medium
+            </Button>
+            <Button
+              variant={difficulty === "hard" ? "default" : "outline"}
+              onClick={() => setDifficulty("hard")}
+              size="sm"
+              className="text-xs"
+            >
+              Hard
+            </Button>
           </div>
         </div>
 
-        {gameState !== "playing" && (
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
-            <div className="rounded-md border border-primary bg-primary/10 p-3 text-center">
-              <p className="text-sm font-bold text-primary">{gameState === "won" ? "🎉 You Won!" : "💥 Game Over!"}</p>
-              <p className="text-xs text-muted-foreground">Time: {formatTime(currentTime)}</p>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Stats</p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-md bg-muted/40 p-2">
+              <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Bomb className="h-3 w-3" />Mines</div>
+              <p className="text-lg font-bold">{remainingMines}</p>
             </div>
-          </motion.div>
-        )}
+            <div className="rounded-md bg-muted/40 p-2">
+              <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Clock className="h-3 w-3" />Time</div>
+              <p className="text-lg font-bold">{formatTime(currentTime)}</p>
+            </div>
+            <div className="rounded-md bg-muted/40 p-2">
+              <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs"><Flag className="h-3 w-3" />Flags</div>
+              <p className="text-lg font-bold">{flags}</p>
+            </div>
+          </div>
+        </div>
 
-        <Button onClick={resetGame} variant="outline" size="sm" className="w-full gap-2">
-          <RotateCcw className="h-3 w-3" />
-          New Game
-        </Button>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Control</p>
+          {sessionState === "idle" ? (
+            <Button onClick={startGame} className="w-full">Start Game</Button>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={togglePause} variant="outline" size="sm" className="w-full">
+                {sessionState === "playing" ? "Pause" : "Resume"}
+              </Button>
+              <Button onClick={startGame} variant="outline" size="sm" className="w-full gap-2">
+                <RotateCcw className="h-3 w-3" />
+                New
+              </Button>
+            </div>
+          )}
+        </div>
 
-        <p className="text-xs text-center text-muted-foreground">Left click to reveal | Right click to flag</p>
+        <div className="space-y-2 rounded-lg border p-3 text-center">
+          <p className="text-xs text-muted-foreground">Best Score</p>
+          <p className="text-2xl font-bold">{bestTime !== null ? formatTime(bestTime) : "-"}</p>
+          <p className="text-xs text-muted-foreground">Best time</p>
+        </div>
       </Card>
     </div>
   )

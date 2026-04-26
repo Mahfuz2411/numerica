@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Hammer, RotateCcw, Trophy, Timer } from "lucide-react"
+import { Hammer, RotateCcw } from "lucide-react"
 
 type Difficulty = "easy" | "medium" | "hard"
 
@@ -46,7 +46,7 @@ interface WhackAMoleGameProps {
 
 export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy")
-  const [gameState, setGameState] = useState<"idle" | "playing" | "finished">("idle")
+  const [gameState, setGameState] = useState<"idle" | "playing" | "paused" | "finished">("idle")
   const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(DIFFICULTIES.easy.duration)
   const [activeMoles, setActiveMoles] = useState<Set<number>>(new Set())
@@ -57,7 +57,7 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
   const spawnTimerRef = useRef<NodeJS.Timeout | null>(null)
   const moleTimersRef = useRef<Map<number, NodeJS.Timeout>>(new Map())
   const activeMolesRef = useRef<Set<number>>(new Set())
-  const gameStateRef = useRef<"idle" | "playing" | "finished">("idle")
+  const gameStateRef = useRef<"idle" | "playing" | "paused" | "finished">("idle")
   const spawnMoleRef = useRef<() => void>(() => {})
 
   const config = DIFFICULTIES[difficulty]
@@ -140,17 +140,7 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
     spawnMoleRef.current = spawnMole
   }, [spawnMole])
 
-  const startGame = useCallback(() => {
-    clearAllTimers()
-    gameStateRef.current = "playing"
-    activeMolesRef.current = new Set()
-    setGameState("playing")
-    setScore(0)
-    setTimeLeft(config.duration)
-    setActiveMoles(new Set())
-    setWhackedMole(null)
-
-    // Start game timer
+  const startLoops = useCallback(() => {
     gameTimerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -162,9 +152,37 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
       })
     }, 1000)
 
-    // Start spawning moles
     spawnMole()
-  }, [config, spawnMole])
+  }, [spawnMole, clearAllTimers])
+
+  const startGame = useCallback(() => {
+    clearAllTimers()
+    gameStateRef.current = "playing"
+    activeMolesRef.current = new Set()
+    setGameState("playing")
+    setScore(0)
+    setTimeLeft(config.duration)
+    setActiveMoles(new Set())
+    setWhackedMole(null)
+    startLoops()
+  }, [config, startLoops, clearAllTimers])
+
+  const pauseGame = useCallback(() => {
+    if (gameStateRef.current !== "playing") return
+    clearAllTimers()
+    gameStateRef.current = "paused"
+    activeMolesRef.current = new Set()
+    setGameState("paused")
+    setActiveMoles(new Set())
+    setWhackedMole(null)
+  }, [clearAllTimers])
+
+  const resumeGame = useCallback(() => {
+    if (gameStateRef.current !== "paused") return
+    gameStateRef.current = "playing"
+    setGameState("playing")
+    startLoops()
+  }, [startLoops])
 
   const whackMole = (index: number) => {
     if (gameState !== "playing" || !activeMoles.has(index)) return
@@ -206,6 +224,17 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
       clearAllTimers()
     }
   }, [clearAllTimers])
+
+  useEffect(() => {
+    const onPause = () => {
+      if (gameStateRef.current === "playing") {
+        pauseGame()
+      }
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [pauseGame])
 
   // Reset when difficulty changes
   useEffect(() => {
@@ -283,13 +312,13 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
         </div>
       </Card>
 
-      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold flex items-center gap-2"><Hammer className="h-4 w-4" />Whack-a-Mole</h3>
+      <Card className="p-4 space-y-4 lg:sticky lg:top-4">
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Difficulty</p>
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-            className="px-3 py-1.5 rounded-lg border bg-background text-sm"
+            className="w-full px-3 py-1.5 rounded-lg border bg-background text-sm"
             disabled={gameState === "playing"}
           >
             <option value="easy">Easy</option>
@@ -298,37 +327,49 @@ export function WhackAMoleGame({ gameId }: WhackAMoleGameProps) {
           </select>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-primary/10 p-2">
-            <div className="text-xs text-muted-foreground">Score</div>
-            <div className="text-xl font-bold">{score}</div>
-          </div>
-          <div className="rounded-lg bg-blue-500/10 p-2">
-            <div className="text-xs text-muted-foreground">Time</div>
-            <div className="text-xl font-bold">{timeLeft}s</div>
-          </div>
-          <div className="rounded-lg bg-yellow-500/10 p-2">
-            <div className="text-xs text-muted-foreground">Best</div>
-            <div className="text-xl font-bold">{highScore}</div>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Stats</p>
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-lg bg-primary/10 p-2">
+              <div className="text-xs text-muted-foreground">Score</div>
+              <div className="text-xl font-bold">{score}</div>
+            </div>
+            <div className="rounded-lg bg-blue-500/10 p-2">
+              <div className="text-xs text-muted-foreground">Time</div>
+              <div className="text-xl font-bold">{timeLeft}s</div>
+            </div>
           </div>
         </div>
 
-        {gameState === "idle" && (
-          <Button onClick={startGame} size="lg" className="w-full gap-2">
-            <Hammer className="h-5 w-5" />
-            Start Game
-          </Button>
-        )}
-        {gameState === "finished" && (
-          <Button onClick={resetGame} size="lg" className="w-full gap-2">
-            <RotateCcw className="h-5 w-5" />
-            Play Again
-          </Button>
-        )}
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Control</p>
+          {gameState === "idle" && (
+            <Button onClick={startGame} size="lg" className="w-full gap-2">
+              <Hammer className="h-5 w-5" />
+              Start Game
+            </Button>
+          )}
+          {gameState === "playing" && (
+            <Button onClick={pauseGame} variant="outline" size="lg" className="w-full gap-2">
+              Pause
+            </Button>
+          )}
+          {gameState === "paused" && (
+            <Button onClick={resumeGame} size="lg" className="w-full gap-2">
+              Resume
+            </Button>
+          )}
+          {gameState === "finished" && (
+            <Button onClick={resetGame} size="lg" className="w-full gap-2">
+              <RotateCcw className="h-5 w-5" />
+              Play Again
+            </Button>
+          )}
+        </div>
 
-        <div className="text-center text-xs text-muted-foreground space-y-1">
-          <p>Click moles fast to score.</p>
-          <p>Board stays in viewport for better UX.</p>
+        <div className="space-y-2 rounded-lg border p-3 text-center">
+          <p className="text-xs text-muted-foreground">Best Score</p>
+          <p className="text-2xl font-bold">{highScore}</p>
         </div>
       </Card>
     </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { RotateCcw, Clock, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card as UICard } from "@/components/ui/card"
@@ -23,6 +23,7 @@ interface MemoryCardGameProps {
 }
 
 export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) {
+    const [sessionState, setSessionState] = useState<"idle" | "playing" | "paused">("idle")
     const [cards, setCards] = useState<Card[]>([])
     const [flippedCards, setFlippedCards] = useState<number[]>([])
     const [moves, setMoves] = useState(0)
@@ -32,6 +33,7 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
     const [isComplete, setIsComplete] = useState(false)
     const [isChecking, setIsChecking] = useState(false)
     const [mounted, setMounted] = useState(false)
+    const [bestScore, setBestScore] = useState<number | null>(null)
 
     const settings = gameSettings.get(gameId)
 
@@ -39,18 +41,32 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
     useEffect(() => {
         setCards(createDeck(8))
         setMounted(true)
+
+        const savedBestScore = localStorage.getItem(`${gameId}-best-score`)
+        if (savedBestScore) {
+            setBestScore(parseInt(savedBestScore, 10))
+        }
+    }, [])
+
+    useEffect(() => {
+        const onPause = () => {
+            setSessionState((prev) => (prev === "playing" ? "paused" : prev))
+        }
+
+        window.addEventListener("numerica:pause-game", onPause)
+        return () => window.removeEventListener("numerica:pause-game", onPause)
     }, [])
 
     // Timer
     useEffect(() => {
-        if (!startTime || isComplete) return
+        if (sessionState !== "playing" || !startTime || isComplete) return
 
         const interval = setInterval(() => {
             setCurrentTime(Math.floor((Date.now() - startTime) / 1000))
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [startTime, isComplete])
+    }, [startTime, isComplete, sessionState])
 
     // Check for game completion
     useEffect(() => {
@@ -58,6 +74,11 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
             setIsComplete(true)
             const finalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0
             const score = calculateScore(moves, finalTime)
+
+            if (!bestScore || score > bestScore) {
+                setBestScore(score)
+                localStorage.setItem(`${gameId}-best-score`, score.toString())
+            }
 
             // Save score
             if (settings.databaseEnabled) {
@@ -69,10 +90,10 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
                 })
             }
         }
-    }, [matchedPairs, isComplete, moves, startTime, gameId, settings.databaseEnabled])
+    }, [matchedPairs, isComplete, moves, startTime, gameId, settings.databaseEnabled, bestScore])
 
     const handleCardClick = async (cardId: number) => {
-        if (isChecking || flippedCards.length >= 2) return
+        if (sessionState !== "playing" || isChecking || flippedCards.length >= 2) return
 
         const card = cards.find((c) => c.id === cardId)
         if (!card || card.isFlipped || card.isMatched) return
@@ -128,6 +149,19 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
         setIsChecking(false)
     }
 
+    const startGame = () => {
+        resetGame()
+        setSessionState("playing")
+    }
+
+    const togglePause = () => {
+        setSessionState((prev) => {
+            if (prev === "playing") return "paused"
+            setStartTime(Date.now() - currentTime * 1000)
+            return "playing"
+        })
+    }
+
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60)
         const secs = seconds % 60
@@ -137,7 +171,15 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
     return (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
             <UICard className="p-4">
-                <div className="mx-auto w-full max-w-sm sm:max-w-md px-2 sm:px-0">
+                <div className="relative mx-auto w-full max-w-sm sm:max-w-md px-2 sm:px-0">
+                    {sessionState !== "playing" && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/95 backdrop-blur-sm">
+                            <Button onClick={sessionState === "idle" ? startGame : togglePause}>
+                                {sessionState === "idle" ? "Start Game" : "Resume Game"}
+                            </Button>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-4 gap-2">{!mounted || cards.length === 0 ? (
                         Array.from({ length: 16 }).map((_, index) => (
                             <div
@@ -203,49 +245,50 @@ export function MemoryCardGame({ gameId = "memory-card" }: MemoryCardGameProps) 
                 </div>
             </UICard>
 
-            <UICard className="p-4 space-y-4 lg:sticky lg:top-24">
-                <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-md bg-muted/40 p-2">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
-                            <Zap className="h-3 w-3" /> Moves
+            <UICard className="p-4 space-y-4 lg:sticky lg:top-4">
+                <div className="space-y-2 rounded-lg border p-3">
+                    <p className="text-xs text-muted-foreground">Game Stats</p>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="rounded-md bg-muted/40 p-2">
+                            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
+                                <Zap className="h-3 w-3" /> Moves
+                            </div>
+                            <p className="text-lg font-bold">{moves}</p>
                         </div>
-                        <p className="text-lg font-bold">{moves}</p>
-                    </div>
-                    <div className="rounded-md bg-muted/40 p-2">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
-                            <Clock className="h-3 w-3" /> Time
+                        <div className="rounded-md bg-muted/40 p-2">
+                            <div className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
+                                <Clock className="h-3 w-3" /> Time
+                            </div>
+                            <p className="text-lg font-bold">{formatTime(currentTime)}</p>
                         </div>
-                        <p className="text-lg font-bold">{formatTime(currentTime)}</p>
-                    </div>
-                    <div className="rounded-md bg-muted/40 p-2">
-                        <p className="text-xs text-muted-foreground">Pairs</p>
-                        <p className="text-lg font-bold">{matchedPairs}/8</p>
+                        <div className="rounded-md bg-muted/40 p-2">
+                            <p className="text-xs text-muted-foreground">Pairs</p>
+                            <p className="text-lg font-bold">{matchedPairs}/8</p>
+                        </div>
                     </div>
                 </div>
 
-                <AnimatePresence>
-                    {isComplete && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="rounded-md border border-primary bg-primary/10 p-3 text-center"
-                        >
-                            <p className="text-sm font-bold text-primary">Completed! 🎉</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                                {moves} moves • {formatTime(currentTime)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                Score: {calculateScore(moves, currentTime)}
-                            </p>
-                        </motion.div>
+                <div className="space-y-2 rounded-lg border p-3">
+                    <p className="text-xs text-muted-foreground">Game Control</p>
+                    {sessionState === "idle" ? (
+                        <Button onClick={startGame} className="w-full">Start Game</Button>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button onClick={togglePause} variant="outline" className="w-full">
+                                {sessionState === "playing" ? "Pause" : "Resume"}
+                            </Button>
+                            <Button onClick={startGame} variant="outline" className="w-full gap-2">
+                                <RotateCcw className="h-4 w-4" />
+                                New
+                            </Button>
+                        </div>
                     )}
-                </AnimatePresence>
+                </div>
 
-                <Button onClick={resetGame} variant="outline" className="w-full gap-2">
-                    <RotateCcw className="h-4 w-4" />
-                    New Game
-                </Button>
+                <div className="space-y-2 rounded-lg border p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Best Score</p>
+                    <p className="text-2xl font-bold">{bestScore ?? "-"}</p>
+                </div>
             </UICard>
         </div>
     )

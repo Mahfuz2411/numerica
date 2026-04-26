@@ -25,6 +25,7 @@ interface TicTacToeGameProps {
 
 export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
   const [board, setBoard] = useState<Board>(createEmptyBoard())
+  const [sessionState, setSessionState] = useState<"idle" | "playing" | "paused">("idle")
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X")
   const [winner, setWinner] = useState<Player>(null)
   const [isDraw, setIsDraw] = useState(false)
@@ -35,8 +36,17 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
 
   const settings = gameSettings.get(gameId)
 
+  useEffect(() => {
+    const onPause = () => {
+      setSessionState((prev) => (prev === "playing" ? "paused" : prev))
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [])
+
   const handleCellClick = async (index: number) => {
-    if (winner || isDraw || isAIThinking) return
+    if (sessionState !== "playing" || winner || isDraw || isAIThinking) return
 
     const newBoard = makeMove(board, index, currentPlayer)
     if (!newBoard) return
@@ -132,6 +142,15 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
     setIsAIThinking(false)
   }
 
+  const startGame = () => {
+    resetGame()
+    setSessionState("playing")
+  }
+
+  const togglePause = () => {
+    setSessionState((prev) => (prev === "playing" ? "paused" : "playing"))
+  }
+
   const changeMode = (newMode: "pvp" | "ai") => {
     setMode(newMode)
     resetGame()
@@ -140,7 +159,15 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
       <Card className="p-4">
-        <div className="mx-auto w-full max-w-xs sm:max-w-sm px-2 sm:px-0">
+        <div className="relative mx-auto w-full max-w-xs sm:max-w-sm px-2 sm:px-0">
+          {sessionState !== "playing" && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/95 backdrop-blur-sm">
+              <Button onClick={sessionState === "idle" ? startGame : togglePause}>
+                {sessionState === "idle" ? "Start Game" : "Resume Game"}
+              </Button>
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2 aspect-square">
             {board.map((cell, index) => {
               const isWinningCell = winningLine?.includes(index)
@@ -160,7 +187,7 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
                     isWinningCell && "bg-primary/20 border-primary"
                   )}
                 >
-                  {cell && (
+                  {sessionState === "playing" && cell && (
                     <motion.span
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
@@ -177,61 +204,81 @@ export function TicTacToeGame({ gameId = "tic-tac-toe" }: TicTacToeGameProps) {
         </div>
       </Card>
 
-      <Card className="p-4 space-y-4 lg:sticky lg:top-24">
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant={mode === "pvp" ? "default" : "outline"}
-            onClick={() => changeMode("pvp")}
-            className="gap-1.5 text-xs"
-            size="sm"
-          >
-            <Users className="h-3.5 w-3.5" />
-            2P
-          </Button>
-          <Button
-            variant={mode === "ai" ? "default" : "outline"}
-            onClick={() => changeMode("ai")}
-            className="gap-1.5 text-xs"
-            size="sm"
-          >
-            <Bot className="h-3.5 w-3.5" />
-            AI
-          </Button>
+      <Card className="p-4 space-y-4 lg:sticky lg:top-4">
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Difficulty</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant={mode === "pvp" ? "default" : "outline"}
+              onClick={() => changeMode("pvp")}
+              className="gap-1.5 text-xs"
+              size="sm"
+            >
+              <Users className="h-3.5 w-3.5" />
+              2P
+            </Button>
+            <Button
+              variant={mode === "ai" ? "default" : "outline"}
+              onClick={() => changeMode("ai")}
+              className="gap-1.5 text-xs"
+              size="sm"
+            >
+              <Bot className="h-3.5 w-3.5" />
+              AI
+            </Button>
+          </div>
         </div>
 
-        <div className="rounded-lg border p-3 text-center">
-          {winner ? (
-            <p className="text-sm font-bold text-primary">Player {winner} Wins! 🎉</p>
-          ) : isDraw ? (
-            <p className="text-sm font-bold text-muted-foreground">It&apos;s a Draw! 🤝</p>
-          ) : isAIThinking ? (
-            <p className="text-sm text-muted-foreground">AI is thinking...</p>
-          ) : (
-            <p className="text-sm font-semibold">
-              Current: <span className="text-primary">{currentPlayer}</span>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Stats</p>
+          <div className="rounded-lg bg-muted/40 p-2 text-center text-sm">
+            <p className="font-semibold">
+              {winner
+                ? `Player ${winner} Wins`
+                : isDraw
+                ? "Draw"
+                : isAIThinking
+                ? "AI is thinking"
+                : `Current: ${currentPlayer}`}
             </p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center text-sm">
+            <div className="rounded-md bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">X</div>
+              <div className="font-bold">{scores.X}</div>
+            </div>
+            <div className="rounded-md bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">O</div>
+              <div className="font-bold">{scores.O}</div>
+            </div>
+            <div className="rounded-md bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">Draw</div>
+              <div className="font-bold">{scores.draws}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Control</p>
+          {sessionState === "idle" ? (
+            <Button onClick={startGame} className="w-full">Start Game</Button>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={togglePause} variant="outline" className="w-full">
+                {sessionState === "playing" ? "Pause" : "Resume"}
+              </Button>
+              <Button onClick={startGame} variant="outline" className="w-full gap-2">
+                <RotateCcw className="h-4 w-4" />
+                New
+              </Button>
+            </div>
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center text-sm">
-          <div className="rounded-md bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">X</div>
-            <div className="font-bold">{scores.X}</div>
-          </div>
-          <div className="rounded-md bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">O</div>
-            <div className="font-bold">{scores.O}</div>
-          </div>
-          <div className="rounded-md bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">Draw</div>
-            <div className="font-bold">{scores.draws}</div>
-          </div>
+        <div className="space-y-2 rounded-lg border p-3 text-center">
+          <p className="text-xs text-muted-foreground">Best Score</p>
+          <p className="text-2xl font-bold">{Math.max(scores.X, scores.O)}</p>
         </div>
-
-        <Button onClick={resetGame} variant="outline" className="w-full gap-2">
-          <RotateCcw className="h-4 w-4" />
-          New Game
-        </Button>
       </Card>
     </div>
   )

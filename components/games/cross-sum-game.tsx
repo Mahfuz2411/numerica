@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
-import { Heart, RotateCcw, Trophy, Grid3X3, Clock3 } from "lucide-react"
+import { Heart, RotateCcw, Clock3 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -50,6 +50,7 @@ const getAchievement = (difficulty: CrossSumeDifficulty, timeSeconds: number, li
 }
 
 export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
+  const [sessionState, setSessionState] = useState<"idle" | "playing" | "paused">("idle")
   const [difficulty, setDifficulty] = useState<CrossSumeDifficulty>("easy")
   const [puzzle, setPuzzle] = useState(() => generateCrossSumePuzzle("easy"))
   const [activeMask, setActiveMask] = useState(() => createFullActiveGrid(CROSS_SUME_CONFIG.easy.size))
@@ -83,7 +84,16 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
   }, [gameId])
 
   useEffect(() => {
-    if (status !== "playing") {
+    const onPause = () => {
+      setSessionState((prev) => (prev === "playing" ? "paused" : prev))
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [])
+
+  useEffect(() => {
+    if (status !== "playing" || sessionState !== "playing") {
       return
     }
 
@@ -92,7 +102,7 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
     }, 1000)
 
     return () => window.clearInterval(timer)
-  }, [status])
+  }, [status, sessionState])
 
   const rowStatus = useMemo(
     () =>
@@ -130,6 +140,11 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
     setStatus("playing")
     setWrongCell(null)
     setMessage("Remove extra numbers so each row and column sum matches the target.")
+    setSessionState("playing")
+  }
+
+  const togglePause = () => {
+    setSessionState((prev) => (prev === "playing" ? "paused" : "playing"))
   }
 
   const handleDifficultyChange = (nextDifficulty: CrossSumeDifficulty) => {
@@ -139,7 +154,7 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
 
   const handleCellRightClick = (event: React.MouseEvent, row: number, col: number) => {
     event.preventDefault()
-    if (status !== "playing") return
+    if (sessionState !== "playing" || status !== "playing") return
     if (!activeMask[row][col]) return
 
     setHighlightMask((prev) => {
@@ -150,7 +165,7 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
   }
 
   const handleCellClick = async (row: number, col: number) => {
-    if (status !== "playing") return
+    if (sessionState !== "playing" || status !== "playing") return
     if (!activeMask[row][col]) return
     if (highlightMask[row][col]) return
 
@@ -221,7 +236,15 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
       <Card className="p-4">
-        <div className="mx-auto flex w-full max-w-2xl justify-center overflow-x-auto">
+        <div className="relative mx-auto flex w-full max-w-2xl justify-center overflow-x-auto">
+          {sessionState !== "playing" && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/95 backdrop-blur-sm">
+              <Button onClick={sessionState === "idle" ? () => startNewGame() : togglePause}>
+                {sessionState === "idle" ? "Start Game" : "Resume Game"}
+              </Button>
+            </div>
+          )}
+
           <div className="inline-block rounded-lg border border-border/70 bg-card/40 p-2">
             <div
               className="grid gap-1"
@@ -294,7 +317,7 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
         </div>
       </Card>
 
-      <Card className="space-y-4 p-4 lg:sticky lg:top-24">
+      <Card className="space-y-4 p-4 lg:sticky lg:top-4">
         <div className="space-y-2 rounded-lg border p-3">
           <p className="text-xs text-muted-foreground">Difficulty</p>
           <Select value={difficulty} onValueChange={(value) => handleDifficultyChange(value as CrossSumeDifficulty)}>
@@ -311,67 +334,55 @@ export function CrossSumGame({ gameId = "cross-sum" }: CrossSumGameProps) {
           </Select>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">Lives</div>
-            <div className="mt-1 flex justify-center gap-1">
-              {Array.from({ length: MAX_LIVES }, (_, i) => (
-                <Heart
-                  key={i}
-                  className={cn("h-4 w-4", i < lives ? "fill-red-500 text-red-500" : "text-muted-foreground")}
-                />
-              ))}
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Stats</p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-lg bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">Lives</div>
+              <div className="mt-1 flex justify-center gap-1">
+                {Array.from({ length: MAX_LIVES }, (_, i) => (
+                  <Heart
+                    key={i}
+                    className={cn("h-4 w-4", i < lives ? "fill-red-500 text-red-500" : "text-muted-foreground")}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="rounded-lg bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">Time</div>
-            <div className="text-lg font-bold inline-flex items-center gap-1">
-              <Clock3 className="h-3.5 w-3.5" />
-              {formatTime(elapsedTime)}
+            <div className="rounded-lg bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">Time</div>
+              <div className="text-lg font-bold inline-flex items-center gap-1">
+                <Clock3 className="h-3.5 w-3.5" />
+                {formatTime(elapsedTime)}
+              </div>
             </div>
-          </div>
-          <div className="rounded-lg bg-muted/40 p-2">
-            <div className="text-xs text-muted-foreground">Solved</div>
-            <div className="text-lg font-bold">{gamesSolved}</div>
+            <div className="rounded-lg bg-muted/40 p-2">
+              <div className="text-xs text-muted-foreground">Solved</div>
+              <div className="text-lg font-bold">{gamesSolved}</div>
+            </div>
           </div>
         </div>
-
-        <div className="rounded-lg border p-3 text-sm text-muted-foreground">{message}</div>
 
         <div className="space-y-2 rounded-lg border p-3">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <Trophy className="h-4 w-4" />
-            Progress
-          </div>
-          <p className="text-xs text-muted-foreground">Best Time: {bestTime !== null ? formatTime(bestTime) : "-"}</p>
-          <p className="text-xs text-muted-foreground">Achievement: {latestAchievement ?? "-"}</p>
+          <p className="text-xs text-muted-foreground">Game Control</p>
+          {sessionState === "idle" ? (
+            <Button onClick={() => startNewGame()} className="w-full">Start Game</Button>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={togglePause} variant="outline" className="w-full">
+                {sessionState === "playing" ? "Pause" : "Resume"}
+              </Button>
+              <Button onClick={() => startNewGame()} variant="outline" className="w-full gap-2">
+                <RotateCcw className="h-4 w-4" />
+                New
+              </Button>
+            </div>
+          )}
         </div>
 
-        <Button onClick={() => startNewGame()} variant="outline" className="w-full gap-2">
-          <RotateCcw className="h-4 w-4" />
-          New Puzzle
-        </Button>
-
-        <div className="rounded-lg border p-3 text-xs text-muted-foreground">
-          <p className="mb-1 inline-flex items-center gap-1 font-medium text-foreground">
-            <Grid3X3 className="h-3.5 w-3.5" />
-            Objective
-          </p>
-          Left click removes numbers. Right click highlights numbers to keep. Match every row/column sum.
+        <div className="space-y-2 rounded-lg border p-3 text-center">
+          <p className="text-xs text-muted-foreground">Best Score</p>
+          <p className="text-2xl font-bold">{bestTime !== null ? formatTime(bestTime) : "-"}</p>
         </div>
-
-        {status !== "playing" && (
-          <div
-            className={cn(
-              "rounded-lg border p-3 text-center text-sm font-semibold",
-              status === "won"
-                ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                : "border-destructive/40 bg-destructive/10 text-destructive"
-            )}
-          >
-            {status === "won" ? "Puzzle solved!" : "Game over"}
-          </div>
-        )}
       </Card>
     </div>
   )

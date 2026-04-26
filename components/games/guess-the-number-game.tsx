@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
-import { RotateCcw, Target, Trophy, ListChecks, Sparkles } from "lucide-react"
+import { RotateCcw, Target, ListChecks, Sparkles } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { gameDB } from "@/lib/db/game-db"
@@ -41,6 +41,7 @@ const getAchievement = (moves: number) => {
 }
 
 export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumberGameProps) {
+  const [sessionState, setSessionState] = useState<"idle" | "playing" | "paused">("idle")
   const [secretCode, setSecretCode] = useState("")
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""))
   const [history, setHistory] = useState<GuessResult[]>([])
@@ -55,8 +56,6 @@ export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumb
   const settings = gameSettings.get(gameId)
 
   useEffect(() => {
-    setSecretCode(getRandomCode())
-
     const savedBest = localStorage.getItem(`${gameId}-best-moves`)
     if (savedBest) {
       setBestMoves(parseInt(savedBest, 10))
@@ -67,6 +66,15 @@ export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumb
       setGamesPlayed(parseInt(savedGamesPlayed, 10))
     }
   }, [gameId])
+
+  useEffect(() => {
+    const onPause = () => {
+      setSessionState((prev) => (prev === "playing" ? "paused" : prev))
+    }
+
+    window.addEventListener("numerica:pause-game", onPause)
+    return () => window.removeEventListener("numerica:pause-game", onPause)
+  }, [])
 
   const canSubmit = useMemo(() => digits.every((digit) => /^\d$/.test(digit)), [digits])
 
@@ -92,7 +100,7 @@ export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumb
   }
 
   const handleSubmitGuess = async () => {
-    if (!canSubmit || won) {
+    if (sessionState !== "playing" || !canSubmit || won) {
       return
     }
 
@@ -147,12 +155,25 @@ export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumb
     setFeedback("Enter five digits and submit your guess.")
     setAchievement(null)
     inputRefs.current[0]?.focus()
+    setSessionState("playing")
+  }
+
+  const togglePause = () => {
+    setSessionState((prev) => (prev === "playing" ? "paused" : "playing"))
   }
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
       <Card className="p-4">
-        <div className="mx-auto w-full max-w-md space-y-4">
+        <div className="relative mx-auto w-full max-w-md space-y-4">
+          {sessionState !== "playing" && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/95 backdrop-blur-sm">
+              <Button onClick={sessionState === "idle" ? startNewGame : togglePause}>
+                {sessionState === "idle" ? "Start Game" : "Resume Game"}
+              </Button>
+            </div>
+          )}
+
           <div className="rounded-lg border bg-card/50 p-4">
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Guess Code</p>
             <div className="mt-3 grid grid-cols-5 gap-2">
@@ -167,14 +188,14 @@ export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumb
                   maxLength={1}
                   onChange={(event) => handleDigitChange(index, event.target.value)}
                   onKeyDown={(event) => handleDigitKeyDown(index, event)}
-                  disabled={won}
+                  disabled={won || sessionState !== "playing"}
                   className="h-12 w-full rounded-lg border border-input bg-transparent text-center text-lg font-semibold outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               ))}
             </div>
 
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <Button onClick={handleSubmitGuess} disabled={!canSubmit || won} className="flex-1 gap-2">
+              <Button onClick={handleSubmitGuess} disabled={sessionState !== "playing" || !canSubmit || won} className="flex-1 gap-2">
                 <Target className="h-4 w-4" />
                 Submit Guess
               </Button>
@@ -222,35 +243,43 @@ export function GuessTheNumberGame({ gameId = "guess-the-number" }: GuessTheNumb
         </div>
       </Card>
 
-      <Card className="space-y-4 p-4 lg:sticky lg:top-24">
-        <div className="rounded-lg bg-muted/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground">Moves</p>
-          <p className="text-2xl font-bold">{moves}</p>
-        </div>
-
-        <div className="rounded-lg bg-muted/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground">Best (Fewest Moves)</p>
-          <p className="text-2xl font-bold">{bestMoves ?? "-"}</p>
-        </div>
-
-        <div className="rounded-lg bg-muted/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground">Games Solved</p>
-          <p className="text-2xl font-bold">{gamesPlayed}</p>
-        </div>
-
-        {achievement && (
-          <div className="rounded-lg border border-primary/30 bg-primary/10 p-3 text-center">
-            <p className="text-xs text-muted-foreground">Latest Achievement</p>
-            <p className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-              <Trophy className="h-4 w-4" />
-              {achievement}
-            </p>
+      <Card className="space-y-4 p-4 lg:sticky lg:top-4">
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Stats</p>
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-lg bg-muted/40 p-3">
+              <p className="text-xs text-muted-foreground">Moves</p>
+              <p className="text-2xl font-bold">{moves}</p>
+            </div>
+            <div className="rounded-lg bg-muted/40 p-3">
+              <p className="text-xs text-muted-foreground">Games Solved</p>
+              <p className="text-2xl font-bold">{gamesPlayed}</p>
+            </div>
           </div>
-        )}
+        </div>
 
-        <p className="text-center text-xs text-muted-foreground">
-          Hint: The secret code can include repeated digits.
-        </p>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="text-xs text-muted-foreground">Game Control</p>
+          {sessionState === "idle" ? (
+            <Button onClick={startNewGame} className="w-full">Start Game</Button>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={togglePause} variant="outline" className="w-full">
+                {sessionState === "playing" ? "Pause" : "Resume"}
+              </Button>
+              <Button variant="outline" onClick={startNewGame} className="w-full gap-2">
+                <RotateCcw className="h-4 w-4" />
+                New
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2 rounded-lg border p-3 text-center">
+          <p className="text-xs text-muted-foreground">Best Score</p>
+          <p className="text-2xl font-bold">{bestMoves ?? "-"}</p>
+          <p className="text-xs text-muted-foreground">Fewest moves</p>
+        </div>
       </Card>
     </div>
   )
